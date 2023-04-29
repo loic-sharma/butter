@@ -1,9 +1,5 @@
-﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
-using Windows.Win32;
+﻿using Windows.Win32;
 using Windows.Win32.Foundation;
-using Windows.Win32.Graphics.Gdi;
-using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Butter;
 
@@ -14,68 +10,7 @@ internal class Program
   [STAThread]
   public static void Main()
   {
-    //while (!Debugger.IsAttached)
-    //{
-    //  Thread.Sleep(100);
-    //}
-
-    Window.Create("Butter application");
-
-    while (PInvoke.GetMessage(out var message, default, 0, 0))
-    {
-      PInvoke.TranslateMessage(message);
-      PInvoke.DispatchMessage(message);
-    }
-  }
-}
-
-internal class Window
-{
-  private const string WindowClassName = "BUTTER_WINDOW";
-
-  public static void Create(string title)
-  {
-    unsafe
-    {
-      fixed (char* szClassName = WindowClassName)
-      {
-        var wcex = default(WNDCLASSEXW);
-        PCWSTR szNull = default;
-        PCWSTR szCursorName = new((char*)PInvoke.IDC_ARROW);
-        PCWSTR szIconName = new((char*)PInvoke.IDI_APPLICATION);
-        wcex.cbSize = (uint)Marshal.SizeOf<WNDCLASSEXW>();
-        wcex.lpfnWndProc = WndProc;
-        wcex.cbClsExtra = 0;
-        wcex.hInstance = PInvoke.GetModuleHandle(szNull);
-        wcex.hCursor = PInvoke.LoadCursor(wcex.hInstance, szCursorName);
-        wcex.hIcon = PInvoke.LoadIcon(wcex.hInstance, szIconName);
-        wcex.hbrBackground = new HBRUSH(new IntPtr(6));
-        wcex.lpszClassName = szClassName;
-        PInvoke.RegisterClassEx(wcex);
-      }
-    }
-
-    HWND window;
-    unsafe
-    {
-      window =
-          PInvoke.CreateWindowEx(
-              0,
-              WindowClassName,
-              title,
-              WINDOW_STYLE.WS_OVERLAPPEDWINDOW,
-              0,
-              0,
-              900,
-              672,
-              default,
-              default,
-              default,
-              null);
-    }
-
-    PInvoke.ShowWindow(window, SHOW_WINDOW_CMD.SW_NORMAL);
-    PInvoke.UpdateWindow(window);
+    var frame = RECT.FromXYWH(0, 0, 900, 672);
 
     var cwd = Directory.GetCurrentDirectory();
     var properties = new FlutterDesktopEngineProperties
@@ -87,20 +22,87 @@ internal class Window
       DartEntrypointArgv = IntPtr.Zero,
     };
 
-    var engine = Flutter.FlutterDesktopEngineCreate(properties);
-    var controller = Flutter.FlutterDesktopViewControllerCreate(900, 672, engine);
-    var view = Flutter.FlutterDesktopViewControllerGetView(controller);
-    var hwnd = new HWND(Flutter.FlutterDesktopViewGetHWND(view));
+    var engine = FlutterEngine.Create(properties);
+    var window = FlutterWindow.Create(engine, "Butter application", frame);
 
-    PInvoke.SetParent(hwnd, window);
-    PInvoke.MoveWindow(hwnd, 0, 0, 900, 672, true);
-    PInvoke.SetFocus(hwnd);
+    // TODO: show after the first frame is rendered.
+    window.Show();
+
+    while (PInvoke.GetMessage(out var message, default, 0, 0))
+    {
+      PInvoke.TranslateMessage(message);
+      PInvoke.DispatchMessage(message);
+    }
+  }
+}
+
+internal class FlutterWindow
+{
+  private const string WindowClassName = "BUTTER_WINDOW";
+
+  private static readonly Dictionary<HWND, FlutterWindow> Windows = new();
+
+  private Window _host;
+  private Window _view;
+
+  public FlutterWindow(Window host, Window view)
+  {
+    _host = host;
+    _view = view;
   }
 
-  private static LRESULT WndProc(HWND hwnd, uint message, WPARAM wparam, LPARAM lparam)
+  public static FlutterWindow Create(FlutterEngine engine, string title, RECT frame)
+  {
+    // Create two windows: the "host" window for the application,
+    // and the "view" window for Flutter to render into.
+    var host = Window.Create(
+      title,
+      WindowClassName,
+      frame,
+      WndProc);
+
+    // Create the view window and attach it to the host.
+    var controller = FlutterViewController.Create(
+      frame.Width,
+      frame.Height,
+      engine);
+
+    var view = new Window(controller.View.GetHwnd());
+    view.SetParent(host);
+    view.Move(frame);
+    view.SetFocus();
+
+    // Now wrap the two windows a FlutterWindow abstraction.
+    var window = new FlutterWindow(host, view);
+
+    Windows[host.Hwnd] = window;
+
+    return window;
+  }
+
+  public void Show() => _host.Show();
+
+  // https://github.com/flutter/flutter/blob/845c12fb1091fe02f336cb06b60b09fa6f389481/packages/flutter_tools/templates/app_shared/windows.tmpl/runner/win32_window.cpp#L177
+  public static LRESULT WndProc(HWND hwnd, uint message, WPARAM wparam, LPARAM lparam)
   {
     switch (message)
     {
+      case PInvoke.WM_SIZE:
+        Windows.TryGetValue(hwnd, out var window);
+
+        if (window == null) break;
+        if (window._view == null) break;
+
+        PInvoke.GetClientRect(hwnd, out RECT frame);
+        PInvoke.MoveWindow(
+          window._view.Hwnd,
+          frame.left,
+          frame.top,
+          frame.Width,
+          frame.Height,
+          true);
+        break;
+
       case PInvoke.WM_CLOSE:
         PInvoke.DestroyWindow(hwnd);
         break;

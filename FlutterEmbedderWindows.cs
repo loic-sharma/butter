@@ -1,6 +1,68 @@
 ﻿using System.Runtime.InteropServices;
+using Windows.Win32.Foundation;
 
 namespace Butter;
+
+// TODO: Disposal
+internal class FlutterEngine
+{
+  internal FlutterDesktopEngineRef _engineRef;
+
+  public FlutterEngine(FlutterDesktopEngineRef engineRef)
+  {
+    _engineRef = engineRef;
+  }
+
+  public static FlutterEngine Create(FlutterDesktopEngineProperties properties)
+  {
+    return new FlutterEngine(Flutter.FlutterDesktopEngineCreate(properties));
+  }
+}
+
+// TODO: Disposal
+
+internal class FlutterViewController
+{
+  private FlutterDesktopViewControllerRef _controllerRef;
+
+  public FlutterViewController(
+    FlutterDesktopViewControllerRef controllerRef,
+    FlutterView view)
+  {
+    _controllerRef = controllerRef;
+    View = view;
+  }
+
+  public FlutterView View { get; private set; }
+
+  public static FlutterViewController Create(
+    int width,
+    int height,
+    FlutterEngine engine)
+  {
+    var controllerRef = Flutter.FlutterDesktopViewControllerCreate(width, height, engine._engineRef);
+    var viewRef = Flutter.FlutterDesktopViewControllerGetView(controllerRef);
+    var view = new FlutterView(viewRef);
+
+    return new FlutterViewController(controllerRef, view);
+  }
+}
+
+// TODO: Disposal
+internal class FlutterView
+{
+  private FlutterDesktopViewRef _viewRef;
+
+  public FlutterView(FlutterDesktopViewRef viewRef)
+  {
+    _viewRef = viewRef;
+  }
+
+  public HWND GetHwnd()
+  {
+    return new HWND(Flutter.FlutterDesktopViewGetHWND(_viewRef));
+  }
+}
 
 // Forked from: https://github.com/LiveOrNot/FlutterSharp/blob/8b24bdf14465c090b53ecc04c0c2c2598ae7aff3/FlutterSharp/Integrations/FlutterInterop.cs
 // See: https://github.com/flutter/engine/blob/68f2ed0a1db5f8de76b265b6101481db6e4ec503/shell/platform/windows/public/flutter_windows.h

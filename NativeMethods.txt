@@ -6,6 +6,7 @@ DefWindowProc
 DestroyWindow
 DispatchMessage
 EndPaint
+GetClientRect
 GetMessage
 GetModuleHandle
 HDC
@@ -28,9 +29,10 @@ SetParent
 ShowWindow
 TranslateMessage
 UpdateWindow
-WM_CLOSE
 WM_COMMAND
+WM_CLOSE
 WM_CREATE
 WM_DESTROY
 WM_PAINT
+WM_SIZE
 WNDCLASSEXW
