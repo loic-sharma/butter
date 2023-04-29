@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
@@ -10,23 +11,29 @@ namespace Butter;
 // https://github.com/timsneath/win32_runner/blob/main/lib/src/window.dart
 internal class Program
 {
-  private const int AddButtonId = 1000;
-  private const string WindowClassName = "ButterWindow";
-  private const string WindowCaption = "Butter application";
+  [STAThread]
+  public static void Main()
+  {
+    //while (!Debugger.IsAttached)
+    //{
+    //  Thread.Sleep(100);
+    //}
 
-  private static readonly Random Rnd = new();
+    Window.Create("Butter application");
 
-  private static void Main() {
-    RegisterWindowClass();
-    CreateWindow();
-
-    while (PInvoke.GetMessage(out var message, default, 0, 0)) {
+    while (PInvoke.GetMessage(out var message, default, 0, 0))
+    {
       PInvoke.TranslateMessage(message);
       PInvoke.DispatchMessage(message);
     }
   }
+}
 
-  private static void RegisterWindowClass()
+internal class Window
+{
+  private const string WindowClassName = "BUTTER_WINDOW";
+
+  public static void Create(string title)
   {
     unsafe
     {
@@ -47,10 +54,7 @@ internal class Program
         PInvoke.RegisterClassEx(wcex);
       }
     }
-  }
 
-  private static void CreateWindow()
-  {
     HWND window;
     unsafe
     {
@@ -58,9 +62,9 @@ internal class Program
           PInvoke.CreateWindowEx(
               0,
               WindowClassName,
-              WindowCaption,
+              title,
               WINDOW_STYLE.WS_OVERLAPPEDWINDOW,
-              PInvoke.CW_USEDEFAULT,
+              0,
               0,
               900,
               672,
@@ -72,17 +76,28 @@ internal class Program
 
     PInvoke.ShowWindow(window, SHOW_WINDOW_CMD.SW_NORMAL);
     PInvoke.UpdateWindow(window);
+
+    var properties = new FlutterDesktopEngineProperties
+    {
+      AotLibraryPath = "C:\\Code\\f\\tests\\x24\\build\\windows\\app.so",
+      IcuDataPath = "C:\\Code\\f\\tests\\x24\\windows\\flutter\\ephemeral\\icudtl.dat",
+      AssetsPath = "C:\\Code\\f\\tests\\x24\\build\\flutter_assets",
+    };
+
+    var engine = Flutter.FlutterDesktopEngineCreate(properties);
+    var controller = Flutter.FlutterDesktopViewControllerCreate(900, 672, engine);
+    var view = Flutter.FlutterDesktopViewControllerGetView(controller);
+    var hwnd = new HWND(Flutter.FlutterDesktopViewGetHWND(view));
+
+    PInvoke.SetParent(hwnd, window);
+    PInvoke.MoveWindow(hwnd, 0, 0, 900, 672, true);
+    PInvoke.SetFocus(hwnd);
   }
 
   private static LRESULT WndProc(HWND hwnd, uint message, WPARAM wparam, LPARAM lparam)
   {
-    switch (message) {
-      case PInvoke.WM_PAINT:
-        PInvoke.BeginPaint(hwnd, out PAINTSTRUCT ps);
-        // TODO...
-        PInvoke.EndPaint(hwnd, ps);
-        break;
-
+    switch (message)
+    {
       case PInvoke.WM_CLOSE:
         PInvoke.DestroyWindow(hwnd);
         break;

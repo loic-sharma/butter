@@ -17,11 +17,14 @@ IDI_APPLICATION
 InvalidateRect
 LoadCursor
 LoadIcon
+MoveWindow
 MSG
 PAINTSTRUCT
 PostMessage
 PostQuitMessage
 RegisterClassExW
+SetFocus
+SetParent
 ShowWindow
 TranslateMessage
 UpdateWindow

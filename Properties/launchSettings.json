@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Butter": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
