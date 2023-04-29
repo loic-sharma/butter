@@ -86,7 +86,10 @@ public struct FlutterDesktopEngineProperties
   [MarshalAs(UnmanagedType.LPStr)]
   public string DartEntrypoint;
 
-  // TODO: Entrypoint arguments
+  public int DartEntrypointArgc;
+
+  // TODO
+  public IntPtr DartEntrypointArgv;
 }
 
 [StructLayout(LayoutKind.Sequential)]

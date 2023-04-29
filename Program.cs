@@ -77,11 +77,14 @@ internal class Window
     PInvoke.ShowWindow(window, SHOW_WINDOW_CMD.SW_NORMAL);
     PInvoke.UpdateWindow(window);
 
+    var cwd = Directory.GetCurrentDirectory();
     var properties = new FlutterDesktopEngineProperties
     {
-      AotLibraryPath = "C:\\Code\\f\\tests\\x24\\build\\windows\\app.so",
-      IcuDataPath = "C:\\Code\\f\\tests\\x24\\windows\\flutter\\ephemeral\\icudtl.dat",
-      AssetsPath = "C:\\Code\\f\\tests\\x24\\build\\flutter_assets",
+      AotLibraryPath = Path.Join(cwd, "build/windows/app.so"),
+      IcuDataPath = Path.Join(cwd, "windows/flutter/ephemeral/icudtl.dat"),
+      AssetsPath = Path.Join(cwd, "build/flutter_assets"),
+      DartEntrypointArgc = 0,
+      DartEntrypointArgv = IntPtr.Zero,
     };
 
     var engine = Flutter.FlutterDesktopEngineCreate(properties);
