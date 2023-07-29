@@ -5,6 +5,7 @@ CW_USEDEFAULT
 DefWindowProc
 DestroyWindow
 DispatchMessage
+DwmSetWindowAttribute
 EndPaint
 GetClientRect
 GetMessage
@@ -33,6 +34,7 @@ WM_COMMAND
 WM_CLOSE
 WM_CREATE
 WM_DESTROY
+WM_DWMCOLORIZATIONCOLORCHANGED
 WM_FONTCHANGE
 WM_PAINT
 WM_SIZE

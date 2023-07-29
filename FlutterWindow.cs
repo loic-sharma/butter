@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.Graphics.Dwm;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
 
@@ -61,18 +62,6 @@ internal class FlutterWindow : IDisposable
     PInvoke.UpdateWindow(_host);
   }
 
-  private void Destroy()
-  {
-    if (Windows.ContainsKey(_host))
-    {
-      Windows.Remove(_host);
-      _controller.Dispose();
-      PInvoke.DestroyWindow(_host);
-    }
-  }
-
-  public void Dispose() => Destroy();
-
   // https://github.com/flutter/flutter/blob/845c12fb1091fe02f336cb06b60b09fa6f389481/packages/flutter_tools/templates/app_shared/windows.tmpl/runner/win32_window.cpp#L177
   public static LRESULT WndProc(HWND hwnd, uint message, WPARAM wparam, LPARAM lparam)
   {
@@ -103,17 +92,31 @@ internal class FlutterWindow : IDisposable
           bRepaint: true);
         return new LRESULT(0);
 
+      case PInvoke.WM_DWMCOLORIZATIONCOLORCHANGED:
+        Window.UpdateTheme(hwnd);
+        return new LRESULT(0);
+
       case PInvoke.WM_FONTCHANGE:
         window._controller.Engine.ReloadSystemFonts();
         return new LRESULT(0);
 
       case PInvoke.WM_DESTROY:
-        window.Destroy();
+        window.Dispose();
         PInvoke.PostQuitMessage(0);
         return new LRESULT(0);
     }
 
     return PInvoke.DefWindowProc(hwnd, message, wparam, lparam);
+  }
+
+  public void Dispose()
+  {
+    if (Windows.ContainsKey(_host))
+    {
+      Windows.Remove(_host);
+      _controller.Dispose();
+      PInvoke.DestroyWindow(_host);
+    }
   }
 }
 
@@ -164,6 +167,23 @@ internal static class Window
               null);
     }
 
+    if (hwnd.IsNull)
+    {
+      throw new FlutterException("Failed to create the window");
+    }
+
+    UpdateTheme(hwnd);
     return hwnd;
+  }
+
+  public static unsafe void UpdateTheme(HWND hwnd)
+  {
+    // TODO: Check the registry's preferred brightness setting.
+    var darkMode = new BOOL(true);
+    PInvoke.DwmSetWindowAttribute(
+      hwnd,
+      DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE,
+      &darkMode,
+      (uint)Marshal.SizeOf<BOOL>());
   }
 }
