@@ -11,18 +11,18 @@ internal class Program
   public static void Main()
   {
     var cwd = Directory.GetCurrentDirectory();
-    var properties = new FlutterDesktopEngineProperties
+    using var engine = FlutterEngine.Create(new FlutterEngineOptions
     {
-      AotLibraryPath = Path.Join(cwd, "build/windows/app.so"),
-      IcuDataPath = Path.Join(cwd, "windows/flutter/ephemeral/icudtl.dat"),
-      AssetsPath = Path.Join(cwd, "build/flutter_assets"),
-      DartEntrypointArgc = 0,
-      DartEntrypointArgv = IntPtr.Zero,
-    };
+      AotLibraryPath = Path.Join(cwd, "build", "windows", "app.so"),
+      IcuDataPath = Path.Join(cwd, "windows", "flutter", "ephemeral", "icudtl.dat"),
+      AssetsPath = Path.Join(cwd, "build", "flutter_assets"),
+    });
 
-    var frame = RECT.FromXYWH(0, 0, 900, 672);
-    using var engine = FlutterEngine.Create(properties);
-    using var window = FlutterWindow.Create(engine, "Butter application", frame);
+    FlutterWindow.RegisterWindowClass();
+    using var window = FlutterWindow.Create(
+      engine,
+      "Butter application",
+      RECT.FromXYWH(0, 0, 900, 672));
 
     // TODO: show after the first frame is rendered.
     window.Show();

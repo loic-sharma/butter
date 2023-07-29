@@ -78,16 +78,16 @@ public delegate bool FlutterDesktopWindowProcCallback(IntPtr hwnd, uint uMsg, In
 public struct FlutterDesktopEngineProperties
 {
   [MarshalAs(UnmanagedType.LPWStr)]
-  public string AssetsPath;
+  public string? AssetsPath;
 
   [MarshalAs(UnmanagedType.LPWStr)]
-  public string IcuDataPath;
+  public string? IcuDataPath;
 
   [MarshalAs(UnmanagedType.LPWStr)]
-  public string AotLibraryPath;
+  public string? AotLibraryPath;
 
   [MarshalAs(UnmanagedType.LPStr)]
-  public string DartEntrypoint;
+  public string? DartEntrypoint;
 
   public int DartEntrypointArgc;
 

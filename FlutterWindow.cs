@@ -22,15 +22,19 @@ internal class FlutterWindow : IDisposable
     _controller = controller;
   }
 
+  public static void RegisterWindowClass()
+  {
+    Window.RegisterWindowClass(WindowClassName, WndProc);
+  }
+
   // TODO: This is not thread safe as it mutates a global.
   public static FlutterWindow Create(FlutterEngine engine, string title, RECT frame)
   {
     // Create the top-level "host" window for the application.
     var host = Window.Create(
-      title,
       WindowClassName,
-      frame,
-      WndProc);
+      title,
+      frame);
 
     // Create the view and attach it to the host.
     var controller = FlutterViewController.Create(
@@ -122,10 +126,8 @@ internal class FlutterWindow : IDisposable
 
 internal static class Window
 {
-  public static HWND Create(
-    string title,
+  public static void RegisterWindowClass(
     string className,
-    RECT frame,
     WNDPROC windowProc)
   {
     unsafe
@@ -147,7 +149,13 @@ internal static class Window
         PInvoke.RegisterClassEx(wcex);
       }
     }
+  }
 
+  public static HWND Create(
+    string className,
+    string title,
+    RECT frame)
+  {
     HWND hwnd;
     unsafe
     {
