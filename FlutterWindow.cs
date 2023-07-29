@@ -15,7 +15,7 @@ internal class FlutterWindow : IDisposable
   private readonly HWND _host;
   private readonly FlutterViewController _controller;
 
-  public FlutterWindow(HWND host, FlutterViewController controller)
+  private FlutterWindow(HWND host, FlutterViewController controller)
   {
     _host = host;
     _controller = controller;
@@ -24,15 +24,14 @@ internal class FlutterWindow : IDisposable
   // TODO: This is not thread safe as it mutates a global.
   public static FlutterWindow Create(FlutterEngine engine, string title, RECT frame)
   {
-    // Create two windows: the "host" window for the application,
-    // and the "view" window for Flutter to render into.
+    // Create the top-level "host" window for the application.
     var host = Window.Create(
       title,
       WindowClassName,
       frame,
       WndProc);
 
-    // Create the view window and attach it to the host.
+    // Create the view and attach it to the host.
     var controller = FlutterViewController.Create(
       engine,
       frame.Width,
@@ -48,7 +47,7 @@ internal class FlutterWindow : IDisposable
       bRepaint: true);
     PInvoke.SetFocus(controller.View.Hwnd);
 
-    // Now wrap the two windows a FlutterWindow abstraction.
+    // Now wrap window and its view in the FlutterWindow abstraction.
     var window = new FlutterWindow(host, controller);
 
     Windows[host] = window;
