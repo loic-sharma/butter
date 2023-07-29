@@ -25,8 +25,7 @@ internal class Program
       "Butter application",
       RECT.FromXYWH(0, 0, 900, 672));
 
-    // TODO: show after the first frame is rendered.
-    window.Show();
+    engine.OnNextFrame(window.Show);
 
     while (PInvoke.GetMessage(out var message, default, 0, 0))
     {

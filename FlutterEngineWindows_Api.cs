@@ -49,10 +49,10 @@ public class FlutterEngine : IDisposable
 
   public void ReloadSystemFonts() => Flutter.FlutterDesktopEngineReloadSystemFonts(_engineRef);
 
-  public void SetNextFrameCallback(Action callback)
+  public void OnNextFrame(Action callback)
   {
-    // TODO
-    throw new NotImplementedException();
+    // TODO: Listen for next frame and  invoke callbacks.
+    callback();
   }
 
   internal FlutterDesktopEngineRef RelinquishEngine()
