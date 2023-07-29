@@ -2,8 +2,11 @@
 
 namespace Butter;
 
+
 // Forked from: https://github.com/LiveOrNot/FlutterSharp/blob/8b24bdf14465c090b53ecc04c0c2c2598ae7aff3/FlutterSharp/Integrations/FlutterInterop.cs
 // See: https://github.com/flutter/engine/blob/68f2ed0a1db5f8de76b265b6101481db6e4ec503/shell/platform/windows/public/flutter_windows.h
+//
+// TODO: Add generated code to source control: https://andrewlock.net/creating-a-source-generator-part-6-saving-source-generator-output-in-source-control/
 public abstract class FlutterSafeHandle : SafeHandle
 {
   public FlutterSafeHandle(bool ownsHandle = true) : base(IntPtr.Zero, ownsHandle)
@@ -147,9 +150,9 @@ public static class Flutter
       FlutterDesktopViewControllerRef controller,
       IntPtr hwnd,
       uint message,
-      IntPtr wParam,
+      UIntPtr wParam,
       IntPtr lParam,
-      IntPtr result);
+      out IntPtr result);
 
   [DllImport("flutter_windows")]
   public static extern FlutterDesktopEngineRef FlutterDesktopEngineCreate(

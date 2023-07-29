@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
@@ -7,18 +6,9 @@ using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Butter;
 
-internal class Window
+internal static class Window
 {
-  public Window(HWND hwnd)
-  {
-    Debug.Assert(hwnd != IntPtr.Zero);
-
-    Hwnd = hwnd;
-  }
-
-  public HWND Hwnd { get; private set; }
-
-  public static Window Create(
+  public static HWND Create(
     string title,
     string className,
     RECT frame,
@@ -63,19 +53,19 @@ internal class Window
               null);
     }
 
-    return new Window(hwnd);
+    return hwnd;
   }
 
-  public void Show()
+  public static void Show(HWND hwnd)
   {
-    PInvoke.ShowWindow(Hwnd, SHOW_WINDOW_CMD.SW_NORMAL);
-    PInvoke.UpdateWindow(Hwnd);
+    PInvoke.ShowWindow(hwnd, SHOW_WINDOW_CMD.SW_NORMAL);
+    PInvoke.UpdateWindow(hwnd);
   }
 
-  public void Move(RECT frame)
+  public static void Move(HWND hwnd, RECT frame)
   {
     PInvoke.MoveWindow(
-      Hwnd,
+      hwnd,
       frame.left,
       frame.top,
       frame.Width,
@@ -83,13 +73,18 @@ internal class Window
       true);
   }
 
-  public void SetParent(Window parent)
+  public static void SetParent(HWND hwnd, HWND parent)
   {
-    PInvoke.SetParent(Hwnd, parent.Hwnd);
+    PInvoke.SetParent(hwnd, parent);
   }
 
-  public void SetFocus()
+  public static void SetFocus(HWND hwnd)
   {
-    PInvoke.SetFocus(Hwnd);
+    PInvoke.SetFocus(hwnd);
+  }
+
+  public static void Destroy(HWND hwnd)
+  {
+    PInvoke.DestroyWindow(hwnd);
   }
 }

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Windows.Win32.Foundation;
 
 namespace Butter;
@@ -76,6 +77,24 @@ internal class FlutterViewController : IDisposable
     var view = new FlutterView(viewRef, hwnd);
 
     return new FlutterViewController(controllerRef, engine, view);
+  }
+
+  public bool TryHandleTopLevelWindowProc(
+    uint message,
+    WPARAM wParam,
+    LPARAM lParam,
+    [NotNullWhen(true)] out LRESULT? result)
+  {
+    var handled = Flutter.FlutterDesktopViewControllerHandleTopLevelWindowProc(
+        _controllerRef,
+        View.Hwnd,
+        message,
+        wParam,
+        lParam,
+        out var value);
+
+    result = handled ? new LRESULT(value) : null;
+    return result is not null;
   }
 
   public void Dispose()

@@ -23,7 +23,7 @@ internal class Program
     };
 
     using var engine = FlutterEngine.Create(properties);
-    using var window = FlutterWindow.Create(engine, "Butter application", frame);
+    var window = FlutterWindow.Create(engine, "Butter application", frame);
 
     // TODO: show after the first frame is rendered.
     window.Show();
@@ -42,15 +42,13 @@ internal class FlutterWindow : IDisposable
 
   private static readonly Dictionary<HWND, FlutterWindow> Windows = new();
 
+  private readonly HWND _host;
   private readonly FlutterViewController _controller;
-  private readonly Window _host;
-  private readonly Window _view;
 
-  public FlutterWindow(FlutterViewController controller, Window host, Window view)
+  public FlutterWindow(HWND host, FlutterViewController controller)
   {
-    _controller = controller;
     _host = host;
-    _view = view;
+    _controller = controller;
   }
 
   // TODO: This is not thread safe as it mutates a global.
@@ -70,62 +68,68 @@ internal class FlutterWindow : IDisposable
       frame.Width,
       frame.Height);
 
-    var view = new Window(controller.View.Hwnd);
-    view.SetParent(host);
-    view.Move(frame);
-    view.SetFocus();
+    Window.SetParent(controller.View.Hwnd, host);
+    Window.Move(controller.View.Hwnd, frame);
+    Window.SetFocus(controller.View.Hwnd);
 
     // Now wrap the two windows a FlutterWindow abstraction.
-    var window = new FlutterWindow(controller, host, view);
+    var window = new FlutterWindow(host, controller);
 
-    Windows[host.Hwnd] = window;
+    Windows[host] = window;
 
     return window;
   }
 
-  public void Show() => _host.Show();
+  public void Show() => Window.Show(_host);
+
+  private void Destroy()
+  {
+    if (Windows.ContainsKey(_host))
+    {
+      // There view's HWND does not need to be destroyed as that's already
+      // done by destroying the view controller.
+      _controller.Dispose();
+      Window.Destroy(_host);
+      Windows.Remove(_host);
+    }
+  }
+
+  public void Dispose() => Destroy();
 
   // https://github.com/flutter/flutter/blob/845c12fb1091fe02f336cb06b60b09fa6f389481/packages/flutter_tools/templates/app_shared/windows.tmpl/runner/win32_window.cpp#L177
   public static LRESULT WndProc(HWND hwnd, uint message, WPARAM wparam, LPARAM lparam)
   {
-    FlutterWindow? window;
+    Windows.TryGetValue(hwnd, out var window);
+    if (window == null)
+    {
+      return PInvoke.DefWindowProc(hwnd, message, wparam, lparam);
+    }
+
+    // TODO
+    // Let Flutter and plugins handle messages first.
+    // This breaks closing the window - we don't receive a redispatched WM_CLOSE message.
+    // if (window._controller.TryHandleTopLevelWindowProc(message, wparam, lparam, out var result))
+    // {
+    //   return (LRESULT)result;
+    // }
+
     switch (message)
     {
       case PInvoke.WM_SIZE:
-        Windows.TryGetValue(hwnd, out window);
-        if (window == null) break;
-
         PInvoke.GetClientRect(hwnd, out RECT frame);
-        PInvoke.MoveWindow(
-          window._view.Hwnd,
-          frame.left,
-          frame.top,
-          frame.Width,
-          frame.Height,
-          true);
-        break;
+        Window.Move(window._controller.View.Hwnd, frame);
+        return new LRESULT(0);
 
       case PInvoke.WM_FONTCHANGE:
-        Windows.TryGetValue(hwnd, out window);
-        if (window == null) break;
-
         window._controller.Engine.ReloadSystemFonts();
-        break;
-
-      case PInvoke.WM_CLOSE:
-        PInvoke.DestroyWindow(hwnd);
-        break;
+        return new LRESULT(0);
 
       case PInvoke.WM_DESTROY:
+        window.Destroy();
         PInvoke.PostQuitMessage(0);
-        break;
-
-      default:
-        return PInvoke.DefWindowProc(hwnd, message, wparam, lparam);
+        return new LRESULT(0);
     }
 
-    return new LRESULT(0);
+    return PInvoke.DefWindowProc(hwnd, message, wparam, lparam);
   }
-
-  public void Dispose() => _controller.Dispose();
 }
