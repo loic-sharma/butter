@@ -8,7 +8,7 @@ namespace Butter;
 internal class Program
 {
   [STAThread]
-  public static void Main()
+  public static void Main(string[] args)
   {
     var cwd = Directory.GetCurrentDirectory();
     using var engine = FlutterEngine.Create(new FlutterEngineOptions
@@ -16,6 +16,7 @@ internal class Program
       AotLibraryPath = Path.Join(cwd, "build", "windows", "app.so"),
       IcuDataPath = Path.Join(cwd, "windows", "flutter", "ephemeral", "icudtl.dat"),
       AssetsPath = Path.Join(cwd, "build", "flutter_assets"),
+      DartArgs = args,
     });
 
     FlutterWindow.RegisterWindowClass();
