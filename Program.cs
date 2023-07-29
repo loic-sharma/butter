@@ -88,13 +88,12 @@ internal class FlutterWindow : IDisposable
   // https://github.com/flutter/flutter/blob/845c12fb1091fe02f336cb06b60b09fa6f389481/packages/flutter_tools/templates/app_shared/windows.tmpl/runner/win32_window.cpp#L177
   public static LRESULT WndProc(HWND hwnd, uint message, WPARAM wparam, LPARAM lparam)
   {
+    FlutterWindow? window;
     switch (message)
     {
       case PInvoke.WM_SIZE:
-        Windows.TryGetValue(hwnd, out var window);
-
+        Windows.TryGetValue(hwnd, out window);
         if (window == null) break;
-        if (window._view == null) break;
 
         PInvoke.GetClientRect(hwnd, out RECT frame);
         PInvoke.MoveWindow(
@@ -104,6 +103,13 @@ internal class FlutterWindow : IDisposable
           frame.Width,
           frame.Height,
           true);
+        break;
+
+      case PInvoke.WM_FONTCHANGE:
+        Windows.TryGetValue(hwnd, out window);
+        if (window == null) break;
+
+        window._controller.Engine.ReloadSystemFonts();
         break;
 
       case PInvoke.WM_CLOSE:

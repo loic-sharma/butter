@@ -14,7 +14,20 @@ internal class FlutterEngine : IDisposable
 
   public static FlutterEngine Create(FlutterDesktopEngineProperties properties)
   {
-    return new FlutterEngine(Flutter.FlutterDesktopEngineCreate(properties));
+    var engineRef = Flutter.FlutterDesktopEngineCreate(properties)
+      ?? throw new FlutterException("Failed to create FlutterEngine");
+
+    return new FlutterEngine(engineRef);
+  }
+
+  public bool Run() => Flutter.FlutterDesktopEngineRun(_engineRef, entryPoint: null);
+
+  public void ReloadSystemFonts() => Flutter.FlutterDesktopEngineReloadSystemFonts(_engineRef);
+
+  public void SetNextFrameCallback(Action callback)
+  {
+    // TODO
+    throw new NotImplementedException();
   }
 
   internal FlutterDesktopEngineRef RelinquishEngine()
@@ -38,12 +51,15 @@ internal class FlutterViewController : IDisposable
 
   public FlutterViewController(
     FlutterDesktopViewControllerRef controllerRef,
+    FlutterEngine engine,
     FlutterView view)
   {
     _controllerRef = controllerRef;
+    Engine = engine;
     View = view;
   }
 
+  public FlutterEngine Engine { get; private set; }
   public FlutterView View { get; private set; }
 
   public static FlutterViewController Create(
@@ -59,7 +75,7 @@ internal class FlutterViewController : IDisposable
     var hwnd = new HWND(Flutter.FlutterDesktopViewGetHWND(viewRef));
     var view = new FlutterView(viewRef, hwnd);
 
-    return new FlutterViewController(controllerRef, view);
+    return new FlutterViewController(controllerRef, engine, view);
   }
 
   public void Dispose()

@@ -162,7 +162,7 @@ public static class Flutter
   [DllImport("flutter_windows")]
   public static extern bool FlutterDesktopEngineRun(
       FlutterDesktopEngineRef engine,
-      [MarshalAs(UnmanagedType.LPStr)] string entryPoint);
+      [MarshalAs(UnmanagedType.LPStr)] string? entryPoint);
 
   [DllImport("flutter_windows")]
   public static extern ulong FlutterDesktopEngineProcessMessages(
