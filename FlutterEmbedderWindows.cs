@@ -3,10 +3,10 @@ using Windows.Win32.Foundation;
 
 namespace Butter;
 
-// TODO: Disposal
-internal class FlutterEngine
+internal class FlutterEngine : IDisposable
 {
-  internal readonly FlutterDesktopEngineRef _engineRef;
+  private readonly FlutterDesktopEngineRef _engineRef;
+  private bool _ownsEngine = true;
 
   public FlutterEngine(FlutterDesktopEngineRef engineRef)
   {
@@ -17,11 +17,25 @@ internal class FlutterEngine
   {
     return new FlutterEngine(Flutter.FlutterDesktopEngineCreate(properties));
   }
+
+  internal FlutterDesktopEngineRef RelinquishEngine()
+  {
+    _ownsEngine = false;
+    return _engineRef;
+  }
+
+  public void Dispose()
+  {
+    if (_ownsEngine)
+    {
+      Flutter.FlutterDesktopEngineDestroy(_engineRef);
+    }
+  }
 }
 
 // TODO: Disposal
 
-internal class FlutterViewController
+internal class FlutterViewController : IDisposable
 {
   private readonly FlutterDesktopViewControllerRef _controllerRef;
 
@@ -36,11 +50,12 @@ internal class FlutterViewController
   public FlutterView View { get; private set; }
 
   public static FlutterViewController Create(
+    FlutterEngine engine,
     int width,
-    int height,
-    FlutterEngine engine)
+    int height)
   {
-    var controllerRef = Flutter.FlutterDesktopViewControllerCreate(width, height, engine._engineRef)
+    var engineRef = engine.RelinquishEngine();
+    var controllerRef = Flutter.FlutterDesktopViewControllerCreate(width, height, engineRef)
       ?? throw new FlutterException("Failed to create FlutterViewController");
 
     var viewRef = Flutter.FlutterDesktopViewControllerGetView(controllerRef);
@@ -48,6 +63,11 @@ internal class FlutterViewController
     var view = new FlutterView(viewRef, hwnd);
 
     return new FlutterViewController(controllerRef, view);
+  }
+
+  public void Dispose()
+  {
+    Flutter.FlutterDesktopViewControllerDestroy(_controllerRef);
   }
 }
 

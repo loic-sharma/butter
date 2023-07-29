@@ -22,8 +22,8 @@ internal class Program
       DartEntrypointArgv = IntPtr.Zero,
     };
 
-    var engine = FlutterEngine.Create(properties);
-    var window = FlutterWindow.Create(engine, "Butter application", frame);
+    using var engine = FlutterEngine.Create(properties);
+    using var window = FlutterWindow.Create(engine, "Butter application", frame);
 
     // TODO: show after the first frame is rendered.
     window.Show();
@@ -36,21 +36,24 @@ internal class Program
   }
 }
 
-internal class FlutterWindow
+internal class FlutterWindow : IDisposable
 {
   private const string WindowClassName = "BUTTER_WINDOW";
 
   private static readonly Dictionary<HWND, FlutterWindow> Windows = new();
 
-  private Window _host;
-  private Window _view;
+  private readonly FlutterViewController _controller;
+  private readonly Window _host;
+  private readonly Window _view;
 
-  public FlutterWindow(Window host, Window view)
+  public FlutterWindow(FlutterViewController controller, Window host, Window view)
   {
+    _controller = controller;
     _host = host;
     _view = view;
   }
 
+  // TODO: This is not thread safe as it mutates a global.
   public static FlutterWindow Create(FlutterEngine engine, string title, RECT frame)
   {
     // Create two windows: the "host" window for the application,
@@ -63,9 +66,9 @@ internal class FlutterWindow
 
     // Create the view window and attach it to the host.
     var controller = FlutterViewController.Create(
+      engine,
       frame.Width,
-      frame.Height,
-      engine);
+      frame.Height);
 
     var view = new Window(controller.View.Hwnd);
     view.SetParent(host);
@@ -73,7 +76,7 @@ internal class FlutterWindow
     view.SetFocus();
 
     // Now wrap the two windows a FlutterWindow abstraction.
-    var window = new FlutterWindow(host, view);
+    var window = new FlutterWindow(controller, host, view);
 
     Windows[host.Hwnd] = window;
 
@@ -117,4 +120,6 @@ internal class FlutterWindow
 
     return new LRESULT(0);
   }
+
+  public void Dispose() => _controller.Dispose();
 }
