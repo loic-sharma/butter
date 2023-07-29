@@ -6,7 +6,7 @@ namespace Butter;
 // TODO: Disposal
 internal class FlutterEngine
 {
-  internal FlutterDesktopEngineRef _engineRef;
+  internal readonly FlutterDesktopEngineRef _engineRef;
 
   public FlutterEngine(FlutterDesktopEngineRef engineRef)
   {
@@ -23,7 +23,7 @@ internal class FlutterEngine
 
 internal class FlutterViewController
 {
-  private FlutterDesktopViewControllerRef _controllerRef;
+  private readonly FlutterDesktopViewControllerRef _controllerRef;
 
   public FlutterViewController(
     FlutterDesktopViewControllerRef controllerRef,
@@ -40,9 +40,12 @@ internal class FlutterViewController
     int height,
     FlutterEngine engine)
   {
-    var controllerRef = Flutter.FlutterDesktopViewControllerCreate(width, height, engine._engineRef);
+    var controllerRef = Flutter.FlutterDesktopViewControllerCreate(width, height, engine._engineRef)
+      ?? throw new FlutterException("Failed to create FlutterViewController");
+
     var viewRef = Flutter.FlutterDesktopViewControllerGetView(controllerRef);
-    var view = new FlutterView(viewRef);
+    var hwnd = new HWND(Flutter.FlutterDesktopViewGetHWND(viewRef));
+    var view = new FlutterView(viewRef, hwnd);
 
     return new FlutterViewController(controllerRef, view);
   }
@@ -51,17 +54,20 @@ internal class FlutterViewController
 // TODO: Disposal
 internal class FlutterView
 {
-  private FlutterDesktopViewRef _viewRef;
+  private readonly FlutterDesktopViewRef _viewRef;
 
-  public FlutterView(FlutterDesktopViewRef viewRef)
+  public FlutterView(FlutterDesktopViewRef viewRef, HWND hwnd)
   {
     _viewRef = viewRef;
+    Hwnd = hwnd;
   }
 
-  public HWND GetHwnd()
-  {
-    return new HWND(Flutter.FlutterDesktopViewGetHWND(_viewRef));
-  }
+  public HWND Hwnd { get; private set; }
+}
+
+public class FlutterException : Exception
+{
+  public FlutterException(string message) : base(message) { }
 }
 
 // Forked from: https://github.com/LiveOrNot/FlutterSharp/blob/8b24bdf14465c090b53ecc04c0c2c2598ae7aff3/FlutterSharp/Integrations/FlutterInterop.cs

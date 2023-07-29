@@ -67,7 +67,7 @@ internal class FlutterWindow
       frame.Height,
       engine);
 
-    var view = new Window(controller.View.GetHwnd());
+    var view = new Window(controller.View.Hwnd);
     view.SetParent(host);
     view.Move(frame);
     view.SetFocus();
