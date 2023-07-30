@@ -13,14 +13,7 @@ internal class FlutterWindow : IDisposable
 
   private static readonly Dictionary<HWND, FlutterWindow> Windows = new();
 
-  private readonly HWND _host;
   private readonly FlutterViewController _controller;
-
-  private FlutterWindow(HWND host, FlutterViewController controller)
-  {
-    _host = host;
-    _controller = controller;
-  }
 
   public static void RegisterWindowClass()
   {
@@ -28,7 +21,7 @@ internal class FlutterWindow : IDisposable
   }
 
   // TODO: This is not thread safe as it mutates a global.
-  public static FlutterWindow Create(FlutterEngine engine, string title, RECT frame)
+  public static FlutterWindow Create(FlutterEngine engine, string title, Frame frame)
   {
     // Create the top-level "host" window for the application.
     var host = Window.Create(
@@ -45,8 +38,8 @@ internal class FlutterWindow : IDisposable
     PInvoke.SetParent(controller.View.Hwnd, host);
     PInvoke.MoveWindow(
       controller.View.Hwnd,
-      frame.left,
-      frame.top,
+      frame.X,
+      frame.Y,
       frame.Width,
       frame.Height,
       bRepaint: true);
@@ -60,10 +53,18 @@ internal class FlutterWindow : IDisposable
     return window;
   }
 
+  private FlutterWindow(HWND hwnd, FlutterViewController controller)
+  {
+    Hwnd = hwnd;
+    _controller = controller;
+  }
+
+  public HWND Hwnd { get; private set; }
+
   public void Show()
   {
-    PInvoke.ShowWindow(_host, SHOW_WINDOW_CMD.SW_NORMAL);
-    PInvoke.UpdateWindow(_host);
+    PInvoke.ShowWindow(Hwnd, SHOW_WINDOW_CMD.SW_NORMAL);
+    PInvoke.UpdateWindow(Hwnd);
   }
 
   // https://github.com/flutter/flutter/blob/845c12fb1091fe02f336cb06b60b09fa6f389481/packages/flutter_tools/templates/app_shared/windows.tmpl/runner/win32_window.cpp#L177
@@ -115,11 +116,11 @@ internal class FlutterWindow : IDisposable
 
   public void Dispose()
   {
-    if (Windows.ContainsKey(_host))
+    if (Windows.ContainsKey(Hwnd))
     {
-      Windows.Remove(_host);
+      Windows.Remove(Hwnd);
       _controller.Dispose();
-      PInvoke.DestroyWindow(_host);
+      PInvoke.DestroyWindow(Hwnd);
     }
   }
 }
@@ -154,7 +155,7 @@ internal static class Window
   public static HWND Create(
     string className,
     string title,
-    RECT frame)
+    Frame frame)
   {
     HWND hwnd;
     unsafe
@@ -194,4 +195,35 @@ internal static class Window
       &darkMode,
       (uint)Marshal.SizeOf<BOOL>());
   }
+}
+
+// TODO: Copy more methods from RECT.
+internal struct Frame
+{
+  private int _left;
+  private int _top;
+  private int _right;
+  private int _bottom;
+
+  public static Frame FromXYWH(int x, int y, int width, int height) =>
+    new(x, y, unchecked(x + width), unchecked(y + height));
+
+  internal Frame(int left, int top, int right, int bottom)
+  {
+    _left = left;
+    _top = top;
+    _right = right;
+    _bottom = bottom;
+  }
+
+  public readonly int Width => unchecked(_right - _left);
+  public readonly int Height => unchecked(_bottom - _top);
+  public readonly int X => _left;
+  public readonly int Y => _top;
+
+  public static implicit operator RECT(Frame value) => new(
+    value._left,
+    value._top,
+    value._right,
+    value._bottom);
 }
