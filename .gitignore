@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# https://dart.dev/guides/libraries/private-files
+# Created by `dart pub`
+.dart_tool/
 pubspec.lock
 
 # User-specific files
@@ -30,6 +33,8 @@ x86/
 [Aa][Rr][Mm]64/
 bld/
 [Bb]in/
+# Allow Butter's bin directory
+!bin
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
