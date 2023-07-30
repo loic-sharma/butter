@@ -11,13 +11,18 @@ internal class FlutterWindow : IDisposable
 {
   private const string WindowClassName = "BUTTER_WINDOW";
 
+  private static bool ClassRegistered = false;
   private static readonly Dictionary<HWND, FlutterWindow> Windows = new();
 
   private readonly FlutterViewController _controller;
 
   public static void RegisterWindowClass()
   {
-    Window.RegisterWindowClass(WindowClassName, WndProc);
+    if (!ClassRegistered)
+    {
+      Window.RegisterWindowClass(WindowClassName, WndProc);
+      ClassRegistered = true;
+    }
   }
 
   // TODO: This is not thread safe as it mutates a global.

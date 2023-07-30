@@ -2,7 +2,7 @@ using Windows.Win32;
 
 namespace Butter;
 
-internal class SingleWindowAppBuilder
+internal class MainWindowAppBuilder
 {
   private const int DefaultWidth = 900;
   private const int DefaultHeight = 672;
@@ -11,18 +11,18 @@ internal class SingleWindowAppBuilder
   private string _title = "Butter app";
   private Frame _frame = Frame.FromXYWH(0, 0, DefaultWidth, DefaultHeight);
 
-  public SingleWindowAppBuilder(string[] args)
+  public MainWindowAppBuilder(string[] args)
   {
     _args = args;
   }
 
-  public SingleWindowAppBuilder UseTitle(string title)
+  public MainWindowAppBuilder UseTitle(string title)
   {
     _title = title;
     return this;
   }
 
-  public SingleWindowAppBuilder UseFrame(
+  public MainWindowAppBuilder UseFrame(
     int x = 0,
     int y = 0,
     int width = DefaultWidth,
@@ -32,7 +32,7 @@ internal class SingleWindowAppBuilder
     return this;
   }
 
-  public SingleWindowApp Build()
+  public MainWindowApp Build()
   {
     var cwd = Directory.GetCurrentDirectory();
     using var engine = FlutterEngine.Create(new FlutterEngineOptions
@@ -51,23 +51,23 @@ internal class SingleWindowAppBuilder
 
     engine.OnNextFrame(window.Show);
 
-    return new SingleWindowApp(window);
+    return new MainWindowApp(window);
   }
 }
 
-internal class SingleWindowApp : IDisposable
+internal class MainWindowApp : IDisposable
 {
-  public static SingleWindowAppBuilder CreateBuilder(string[] args)
+  public static MainWindowAppBuilder CreateBuilder(string[] args)
   {
-    return new SingleWindowAppBuilder(args);
+    return new MainWindowAppBuilder(args);
   }
 
-  internal SingleWindowApp(FlutterWindow window)
+  internal MainWindowApp(FlutterWindow window)
   {
-    Window = window;
+    MainWindow = window;
   }
 
-  public FlutterWindow Window { get; }
+  public FlutterWindow MainWindow { get; }
 
   public void Run()
   {
@@ -78,5 +78,5 @@ internal class SingleWindowApp : IDisposable
     }
   }
 
-  public void Dispose() => Window.Dispose();
+  public void Dispose() => MainWindow.Dispose();
 }
