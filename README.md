@@ -3,10 +3,10 @@
 ### Local testing
 
 1. Build engine
-2. Copy the locally built engine to the `example/butter/Flutter` directory:
+2. Copy the locally built engine to the `example/butter/Flutter/ephemeral` directory:
 
    ```
-   cp C:\Code\f\engine\src\out\host_debug_unopt\flutter_windows.dll C:\Code\butter\example\butter\Flutter
+   cp C:\Code\f\engine\src\out\host_debug_unopt\flutter_windows.dll C:\Code\butter\example\butter\Flutter\ephemeral
    ```
 
 3. Run the example app once using the local engine:
