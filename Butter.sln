@@ -1,25 +1,27 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.5.33424.131
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Butter", "Butter.csproj", "{0843F429-A7B2-43DB-914B-59CA373F8221}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dotnet", "dotnet", "{8ED0AB2A-C1C1-4C33-B589-A2CD387553B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Butter.Windows", "dotnet\Butter.Windows\Butter.Windows.csproj", "{93B2C583-7D9B-4B6B-A49C-23DEAE379C1B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0843F429-A7B2-43DB-914B-59CA373F8221}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0843F429-A7B2-43DB-914B-59CA373F8221}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0843F429-A7B2-43DB-914B-59CA373F8221}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0843F429-A7B2-43DB-914B-59CA373F8221}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {CEA24D72-9799-43D9-8402-F27F19E60A18}
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{93B2C583-7D9B-4B6B-A49C-23DEAE379C1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93B2C583-7D9B-4B6B-A49C-23DEAE379C1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93B2C583-7D9B-4B6B-A49C-23DEAE379C1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93B2C583-7D9B-4B6B-A49C-23DEAE379C1B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{93B2C583-7D9B-4B6B-A49C-23DEAE379C1B} = {8ED0AB2A-C1C1-4C33-B589-A2CD387553B9}
 	EndGlobalSection
 EndGlobal

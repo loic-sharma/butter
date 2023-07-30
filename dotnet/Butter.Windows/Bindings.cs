@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Butter;
+namespace Butter.Windows.Bindings;
 
 // TODO: Add generated code to source control: https://andrewlock.net/creating-a-source-generator-part-6-saving-source-generator-output-in-source-control/
 public abstract class FlutterSafeHandle : SafeHandle

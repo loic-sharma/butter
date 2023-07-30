@@ -1,4 +1,4 @@
-﻿namespace Butter;
+﻿namespace Butter.Windows;
 
 public class Program
 {

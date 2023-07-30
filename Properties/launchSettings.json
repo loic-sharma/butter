@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "Butter": {
-      "commandName": "Project",
-      "nativeDebugging": true,
-      "workingDirectory": "C:\\Code\\f\\tests\\x24"
-    }
-  }
-}
