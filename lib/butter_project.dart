@@ -39,7 +39,7 @@ class ButterProject extends FlutterProjectPlatform {
   Directory get editableDirectory =>
       parent.directory.childDirectory(_childDirectory);
 
-  Directory get managedDirectory => editableDirectory.childDirectory('flutter');
+  Directory get managedDirectory => editableDirectory.childDirectory('Flutter');
 
   Directory get ephemeralDirectory =>
       managedDirectory.childDirectory('ephemeral');

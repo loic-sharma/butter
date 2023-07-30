@@ -7,13 +7,16 @@ import 'package:flutter_tools/src/android/build_validation.dart' as android;
 import 'package:flutter_tools/src/base/analyze_size.dart';
 import 'package:flutter_tools/src/base/common.dart';
 import 'package:flutter_tools/src/base/file_system.dart';
+import 'package:flutter_tools/src/base/logger.dart';
 import 'package:flutter_tools/src/base/os.dart';
 import 'package:flutter_tools/src/build_info.dart';
 import 'package:flutter_tools/src/commands/build.dart';
-import 'package:flutter_tools/src/commands/build_apk.dart';
+import 'package:flutter_tools/src/artifacts.dart';
 import 'package:flutter_tools/src/globals.dart' as globals;
 import 'package:flutter_tools/src/project.dart';
 import 'package:flutter_tools/src/runner/flutter_command.dart';
+
+import '../butter_project.dart';
 
 class ButterBuildCommand extends BuildCommand {
   ButterBuildCommand({
@@ -36,45 +39,6 @@ class BuildButterCommand extends BuildSubCommand {
           logger: globals.logger,
         ) {
     addCommonDesktopBuildOptions(verboseHelp: verboseHelp);
-    argParser.addOption(
-      'target-arch',
-      defaultsTo: 'x64', //_getCurrentHostPlatformArchName(),
-      allowed: <String>['x64', 'arm64'],
-      help: 'Target architecture for which the app is compiled',
-    );
-    argParser.addOption(
-      'target-backend-type',
-      defaultsTo: 'wayland',
-      allowed: <String>['wayland', 'gbm', 'eglstream', 'x11'],
-      help: 'Target backend type that the app will run on devices.',
-    );
-    argParser.addOption(
-      'target-compiler-triple',
-      help: 'Target compiler triple for which the app is compiled. '
-          'e.g. aarch64-linux-gnu',
-    );
-    argParser.addOption(
-      'target-sysroot',
-      defaultsTo: '/',
-      help: 'The root filesystem path of target platform for which '
-          'the app is compiled. This option is valid only '
-          'if the current host and target architectures are different.',
-    );
-    argParser.addOption(
-      'target-toolchain',
-      help: 'The toolchain path for Clang.',
-    );
-    argParser.addOption(
-      'system-include-directories',
-      help:
-          'The additional system include paths to cross-compile for target platform. '
-          'This option is valid only '
-          'if the current host and target architectures are different.',
-    );
-    argParser.addOption(
-      'target-compiler-flags',
-      help: 'The extra compile flags to be applied to C and C++ compiler',
-    );
   }
 
   @override
@@ -83,7 +47,7 @@ class BuildButterCommand extends BuildSubCommand {
   @override
   Future<Set<DevelopmentArtifact>> get requiredArtifacts async =>
       <DevelopmentArtifact>{
-        // ELinuxDevelopmentArtifact.elinux,
+        DevelopmentArtifact.windows
       };
 
   @override
@@ -100,39 +64,96 @@ class BuildButterCommand extends BuildSubCommand {
   /// See: [BuildApkCommand.runCommand] in `build_apk.dart`
   @override
   Future<FlutterCommandResult> runCommand() async {
-    // Not supported cross-building for x64 on arm64.
-    // final String? targetArch = stringArg('target-arch');
-    // final String hostArch = _getCurrentHostPlatformArchName();
-    // if (hostArch != targetArch && hostArch == 'arm64') {
-    //   globals.logger
-    //       .printError('Not supported cross-building for x64 on arm64.');
-    //   return FlutterCommandResult.fail();
-    // }
-
-    // final BuildInfo buildInfo = await getBuildInfo();
-    // final ELinuxBuildInfo eLinuxBuildInfo = ELinuxBuildInfo(
-    //   buildInfo,
-    //   targetArch: targetArch!,
-    //   targetBackendType: stringArg('target-backend-type')!,
-    //   targetCompilerTriple: stringArg('target-compiler-triple'),
-    //   targetSysroot: stringArg('target-sysroot')!,
-    //   targetCompilerFlags: stringArg('target-compiler-flags'),
-    //   targetToolchain: stringArg('target-toolchain'),
-    //   systemIncludeDirectories: stringArg('system-include-directories'),
-    // );
-    // validateBuild(eLinuxBuildInfo);
-    // displayNullSafetyMode(buildInfo);
-
-    // await ELinuxBuilder.buildBundle(
-    //   project: FlutterProject.current(),
-    //   targetFile: targetFile,
-    //   eLinuxBuildInfo: eLinuxBuildInfo,
-    //   sizeAnalyzer: SizeAnalyzer(
-    //     fileSystem: globals.fs,
-    //     logger: globals.logger,
-    //     flutterUsage: globals.flutterUsage,
-    //   ),
-    // );
+    final FlutterProject flutterProject = FlutterProject.current();
+    final BuildInfo buildInfo = await getBuildInfo();
+    if (!globals.platform.isWindows) {
+      throwToolExit('"build butter" only supported on Windows hosts.');
+    }
+    displayNullSafetyMode(buildInfo);
+    await _buildButter(
+      ButterProject.fromFlutter(flutterProject),
+      buildInfo,
+    );
     return FlutterCommandResult.success();
   }
+}
+
+Future<void> _buildButter(ButterProject project, BuildInfo buildInfo) async {
+  final Artifacts? artifacts = globals.artifacts;
+  final FileSystem fs = globals.fs;
+
+  final TargetPlatform targetPlatform = TargetPlatform.windows_x64;
+
+  if (artifacts == null) { throw 'Null artifacts'; }
+
+  final Status status = globals.logger.startProgress(
+    'Building Butter application...',
+  );
+  try {
+    _unpackButterArtifacts(
+      project,
+      buildInfo,
+      targetPlatform,
+      artifacts,
+      fs,
+    );
+  } finally {
+    status.stop();
+  }
+
+  await Future<void>.value();
+}
+
+// See: packages\flutter_tools\lib\src\build_system\targets\windows.dart
+// See: packages\flutter_tools\lib\src\build_system\targets\desktop.dart
+const List<String> _kWindowsArtifacts = <String>[
+  'flutter_windows.dll',
+  'flutter_windows.dll.pdb',
+];
+void _unpackButterArtifacts(
+  ButterProject project,
+  BuildInfo buildInfo,
+  TargetPlatform targetPlatform,
+  Artifacts artifacts,
+  FileSystem fs,
+) {
+  final Directory ephemeralDirectory = project.ephemeralDirectory;
+  final String artifactsPath = artifacts.getArtifactPath(
+    Artifact.windowsDesktopPath,
+    platform: targetPlatform,
+    mode: buildInfo.mode,
+  );
+
+  // Copy Windows artifacts.
+  for (final String artifact in _kWindowsArtifacts) {
+    final String artifactPath = fs.path.join(
+      artifactsPath,
+      artifact,
+    );
+    final FileSystemEntityType artifactType = fs.typeSync(artifactPath);
+    assert(artifactType == FileSystemEntityType.file);
+    final String outputPath = fs.path.join(
+      ephemeralDirectory.path,
+      fs.path.relative(artifactPath, from: artifactsPath),
+    );
+    final File artifactFile = fs.file(artifactPath);
+    final File destinationFile = fs.file(outputPath);
+    if (!destinationFile.parent.existsSync()) {
+      destinationFile.parent.createSync(recursive: true);
+    }
+    artifactFile.copySync(destinationFile.path);
+  }
+
+  // Copy ICU data
+  final String icuDataPath = artifacts.getArtifactPath(
+    Artifact.icuData,
+    platform: targetPlatform,
+  );
+  final File icuDataFile = fs.file(icuDataPath);
+  final String icuDataDestinationPath = fs.path.join(
+    ephemeralDirectory.path,
+    icuDataFile.basename,
+  );
+  final File icuDataDestinationFile = fs.file(icuDataDestinationPath);
+  icuDataFile.copySync(icuDataDestinationFile.path);
 }
