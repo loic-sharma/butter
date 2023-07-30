@@ -16,31 +16,22 @@ class ButterProject extends FlutterProjectPlatform {
   String get _childDirectory => 'butter';
 
   @override
-  bool existsSync() => editableDirectory.existsSync();
+  bool existsSync() => _editableDirectory.existsSync();
 
-  // @override
-  // File get cmakeFile => editableDirectory.childFile('CMakeLists.txt');
+  Directory get _editableDirectory => parent.directory.childDirectory(_childDirectory);
 
-  // @override
-  // File get managedCmakeFile => managedDirectory.childFile('CMakeLists.txt');
+  /// The directory in the project that is managed by Flutter. As much as
+  /// possible, files that are edited by Flutter tooling after initial project
+  /// creation should live here.
+  Directory get managedDirectory => _editableDirectory.childDirectory('Flutter');
 
-  // @override
-  // File get generatedCmakeConfigFile =>
-  //     ephemeralDirectory.childFile('generated_config.cmake');
+  /// The subdirectory of [managedDirectory] that contains files that are
+  /// generated on the fly. All generated files that are not intended to be
+  /// checked in should live here.
+  Directory get ephemeralDirectory => managedDirectory.childDirectory('ephemeral');
 
-  // @override
-  // File get generatedPluginCmakeFile =>
-  //     managedDirectory.childFile('generated_plugins.cmake');
-
-  // @override
-  // Directory get pluginSymlinkDirectory =>
-  //     ephemeralDirectory.childDirectory('.plugin_symlinks');
-
-  Directory get editableDirectory =>
-      parent.directory.childDirectory(_childDirectory);
-
-  Directory get managedDirectory => editableDirectory.childDirectory('Flutter');
-
-  Directory get ephemeralDirectory =>
-      managedDirectory.childDirectory('ephemeral');
+  /// The directory in the project that is owned by the app. As much as
+  /// possible, Flutter tooling should not edit files in this directory after
+  /// initial project creation.
+  Directory get runnerDirectory => _editableDirectory.childDirectory('Runner');
 }

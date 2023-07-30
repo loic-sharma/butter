@@ -92,6 +92,8 @@ Future<void> buildButter(
       artifacts,
       fs,
     );
+
+    _runDotnetBuild(project);
   } finally {
     status.stop();
   }
@@ -151,4 +153,20 @@ void _unpackButterArtifacts(
   );
   final File icuDataDestinationFile = fs.file(icuDataDestinationPath);
   icuDataFile.copySync(icuDataDestinationFile.path);
+}
+
+Future<void> _runDotnetBuild(ButterProject project) async {
+  int result;
+  try {
+    result = await globals.processUtils.stream(
+      const <String>['dotnet', 'build'],
+      workingDirectory: project.runnerDirectory.path,
+      trace: true,
+    );
+  } on ArgumentError {
+    throwToolExit("dotnet not found. Run 'flutter doctor' for more information.");
+  }
+  if (result != 0) {
+    throwToolExit('.NET build failed');
+  }
 }
