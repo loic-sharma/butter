@@ -7,6 +7,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dotnet", "dotnet", "{8ED0AB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Butter.Windows", "dotnet\Butter.Windows\Butter.Windows.csproj", "{93B2C583-7D9B-4B6B-A49C-23DEAE379C1B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "example", "example", "{F0E56518-0F8B-41FA-9F71-F4898AF06B71}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Butter.Example", "example\butter\Butter.Example.csproj", "{28A3B2E5-D257-4728-A0B4-B40860DC1A18}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,8 +24,13 @@ Global
 		{93B2C583-7D9B-4B6B-A49C-23DEAE379C1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93B2C583-7D9B-4B6B-A49C-23DEAE379C1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93B2C583-7D9B-4B6B-A49C-23DEAE379C1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28A3B2E5-D257-4728-A0B4-B40860DC1A18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28A3B2E5-D257-4728-A0B4-B40860DC1A18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28A3B2E5-D257-4728-A0B4-B40860DC1A18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28A3B2E5-D257-4728-A0B4-B40860DC1A18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{93B2C583-7D9B-4B6B-A49C-23DEAE379C1B} = {8ED0AB2A-C1C1-4C33-B589-A2CD387553B9}
+		{28A3B2E5-D257-4728-A0B4-B40860DC1A18} = {F0E56518-0F8B-41FA-9F71-F4898AF06B71}
 	EndGlobalSection
 EndGlobal

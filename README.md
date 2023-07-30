@@ -9,18 +9,17 @@
    cp C:\Code\f\engine\src\out\host_debug_unopt\flutter_windows.dll C:\Code\butter\dotnet\Butter.Windows
    ```
 
-3. Create a test app and run it once using local engine
+3. Run the example app once using the local engine:
 
    ```
-   flutter create my_app
-   cd my_app
+   cd example
    flutter run -d windows --local-engine host_debug_unopt
    ```
 
-4. Now run using Butter:
+4. Now run the example app using Butter:
 
    ```
-   dotnet build C:\Code\butter ; dotnet C:\Code\butter\dotnet\Butter.Windows\bin\Debug\net6.0-windows8.0\Butter.Windows.dll
+   dotnet run --project butter
    ```
 
 ### Useful resources

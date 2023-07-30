@@ -2,7 +2,7 @@ using Windows.Win32;
 
 namespace Butter.Windows;
 
-internal class MainWindowAppBuilder
+public class MainWindowAppBuilder
 {
   private const int DefaultWidth = 900;
   private const int DefaultHeight = 672;
@@ -55,7 +55,7 @@ internal class MainWindowAppBuilder
   }
 }
 
-internal class MainWindowApp : IDisposable
+public class MainWindowApp : IDisposable
 {
   public static MainWindowAppBuilder CreateBuilder(string[] args)
   {

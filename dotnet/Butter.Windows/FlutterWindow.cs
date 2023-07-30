@@ -7,7 +7,7 @@ using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Butter.Windows;
 
-internal class FlutterWindow : IDisposable
+public class FlutterWindow : IDisposable
 {
   private const string WindowClassName = "BUTTER_WINDOW";
 
@@ -203,7 +203,7 @@ internal static class Window
 }
 
 // TODO: Copy more methods from RECT.
-internal struct Frame
+public struct Frame
 {
   private int _left;
   private int _top;
