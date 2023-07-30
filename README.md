@@ -3,10 +3,10 @@
 ### Local testing
 
 1. Build engine
-2. Copy the locally built engine to the `dotnet/Butter.Windows` directory:
+2. Copy the locally built engine to the `example/butter/Flutter` directory:
 
    ```
-   cp C:\Code\f\engine\src\out\host_debug_unopt\flutter_windows.dll C:\Code\butter\dotnet\Butter.Windows
+   cp C:\Code\f\engine\src\out\host_debug_unopt\flutter_windows.dll C:\Code\butter\example\butter\Flutter
    ```
 
 3. Run the example app once using the local engine:
@@ -19,7 +19,7 @@
 4. Now run the example app using Butter:
 
    ```
-   dotnet run --project butter
+   dotnet run --project butter/Runner
    ```
 
 ### Useful resources

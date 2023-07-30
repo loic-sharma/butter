@@ -1,5 +1,4 @@
 import 'package:flutter_tools/runner.dart' as runner;
-import 'package:flutter_tools/src/artifacts.dart';
 import 'package:flutter_tools/src/base/context.dart';
 import 'package:flutter_tools/src/base/io.dart';
 import 'package:flutter_tools/src/base/logger.dart';
@@ -8,48 +7,22 @@ import 'package:flutter_tools/src/base/template.dart';
 import 'package:flutter_tools/src/base/terminal.dart';
 import 'package:flutter_tools/src/base/user_messages.dart';
 import 'package:flutter_tools/src/cache.dart';
-import 'package:flutter_tools/src/commands/analyze.dart';
-import 'package:flutter_tools/src/commands/assemble.dart';
-import 'package:flutter_tools/src/commands/attach.dart';
-import 'package:flutter_tools/src/commands/build.dart';
-import 'package:flutter_tools/src/commands/channel.dart';
 import 'package:flutter_tools/src/commands/clean.dart';
-import 'package:flutter_tools/src/commands/config.dart';
 import 'package:flutter_tools/src/commands/create.dart';
-import 'package:flutter_tools/src/commands/custom_devices.dart';
 import 'package:flutter_tools/src/commands/daemon.dart';
-import 'package:flutter_tools/src/commands/debug_adapter.dart';
-import 'package:flutter_tools/src/commands/devices.dart';
 import 'package:flutter_tools/src/commands/doctor.dart';
-import 'package:flutter_tools/src/commands/downgrade.dart';
-import 'package:flutter_tools/src/commands/drive.dart';
-import 'package:flutter_tools/src/commands/emulators.dart';
-import 'package:flutter_tools/src/commands/generate.dart';
-import 'package:flutter_tools/src/commands/generate_localizations.dart';
-import 'package:flutter_tools/src/commands/ide_config.dart';
-import 'package:flutter_tools/src/commands/install.dart';
-import 'package:flutter_tools/src/commands/logs.dart';
-import 'package:flutter_tools/src/commands/make_host_app_editable.dart';
-import 'package:flutter_tools/src/commands/packages.dart';
-import 'package:flutter_tools/src/commands/precache.dart';
 import 'package:flutter_tools/src/commands/run.dart';
-import 'package:flutter_tools/src/commands/screenshot.dart';
-import 'package:flutter_tools/src/commands/shell_completion.dart';
-import 'package:flutter_tools/src/commands/symbolize.dart';
-import 'package:flutter_tools/src/commands/test.dart';
-import 'package:flutter_tools/src/commands/update_packages.dart';
-import 'package:flutter_tools/src/commands/upgrade.dart';
-import 'package:flutter_tools/src/devtools_launcher.dart';
-import 'package:flutter_tools/src/features.dart';
 import 'package:flutter_tools/src/globals.dart' as globals;
 // Files in `isolated` are intentionally excluded from google3 tooling.
 import 'package:flutter_tools/src/isolated/mustache_template.dart';
-import 'package:flutter_tools/src/isolated/resident_web_runner.dart';
 import 'package:flutter_tools/src/pre_run_validator.dart';
 import 'package:flutter_tools/src/project_validator.dart';
-import 'package:flutter_tools/src/resident_runner.dart';
 import 'package:flutter_tools/src/runner/flutter_command.dart';
-import 'package:flutter_tools/src/web/web_runner.dart';
+
+import 'commands/build.dart';
+import 'commands/clean.dart';
+import 'commands/create.dart';
+import 'commands/run.dart';
 
 /// Main entry point for commands.
 ///
@@ -93,19 +66,8 @@ Future<void> main(List<String> args) async {
     muteCommandLogging: muteCommandLogging,
     verboseHelp: verboseHelp,
     overrides: <Type, Generator>{
-      // The web runner is not supported in google3 because it depends
-      // on dwds.
-      WebRunnerFactory: () => DwdsWebRunnerFactory(),
       // The mustache dependency is different in google3
       TemplateRenderer: () => const MustacheTemplateRenderer(),
-      // The devtools launcher is not supported in google3 because it depends on
-      // devtools source code.
-      DevtoolsLauncher: () => DevtoolsServerLauncher(
-        processManager: globals.processManager,
-        dartExecutable: globals.artifacts!.getArtifactPath(Artifact.engineDartBinary),
-        logger: globals.logger,
-        botDetector: globals.botDetector,
-      ),
       Logger: () {
         final LoggerFactory loggerFactory = LoggerFactory(
           outputPreferences: globals.outputPreferences,
@@ -130,38 +92,11 @@ List<FlutterCommand> generateCommands({
   required bool verboseHelp,
   required bool verbose,
 }) => <FlutterCommand>[
-  AnalyzeCommand(
-    verboseHelp: verboseHelp,
-    fileSystem: globals.fs,
-    platform: globals.platform,
-    processManager: globals.processManager,
-    logger: globals.logger,
-    terminal: globals.terminal,
-    artifacts: globals.artifacts!,
-    // new ProjectValidators should be added here for the --suggestions to run
-    allProjectValidators: <ProjectValidator>[
-      GeneralInfoProjectValidator(),
-      VariableDumpMachineProjectValidator(
-        logger: globals.logger,
-        fileSystem: globals.fs,
-        platform: globals.platform,
-      ),
-    ],
-    suppressAnalytics: globals.flutterUsage.suppressAnalytics,
-  ),
-  AssembleCommand(verboseHelp: verboseHelp, buildSystem: globals.buildSystem),
-  AttachCommand(
-    verboseHelp: verboseHelp,
-    artifacts: globals.artifacts,
-    stdio: globals.stdio,
-    logger: globals.logger,
-    terminal: globals.terminal,
-    signals: globals.signals,
-    platform: globals.platform,
-    processInfo: globals.processInfo,
-    fileSystem: globals.fs,
-  ),
-  BuildCommand(
+  // Flutter tool's commands
+  DoctorCommand(verbose: verbose),
+
+  // Butter's commands
+  ButterBuildCommand(
     fileSystem: globals.fs,
     buildSystem: globals.buildSystem,
     osUtils: globals.os,
@@ -169,64 +104,9 @@ List<FlutterCommand> generateCommands({
     androidSdk: globals.androidSdk,
     logger: globals.logger,
   ),
-  ChannelCommand(verboseHelp: verboseHelp),
-  CleanCommand(verbose: verbose),
-  ConfigCommand(verboseHelp: verboseHelp),
-  CustomDevicesCommand(
-    customDevicesConfig: globals.customDevicesConfig,
-    operatingSystemUtils: globals.os,
-    terminal: globals.terminal,
-    platform: globals.platform,
-    featureFlags: featureFlags,
-    processManager: globals.processManager,
-    fileSystem: globals.fs,
-    logger: globals.logger
-  ),
-  CreateCommand(verboseHelp: verboseHelp),
-  DaemonCommand(hidden: !verboseHelp),
-  DebugAdapterCommand(verboseHelp: verboseHelp),
-  DevicesCommand(verboseHelp: verboseHelp),
-  DoctorCommand(verbose: verbose),
-  DowngradeCommand(verboseHelp: verboseHelp, logger: globals.logger),
-  DriveCommand(verboseHelp: verboseHelp,
-    fileSystem: globals.fs,
-    logger: globals.logger,
-    platform: globals.platform,
-    signals: globals.signals,
-  ),
-  EmulatorsCommand(),
-  GenerateCommand(),
-  GenerateLocalizationsCommand(
-    fileSystem: globals.fs,
-    logger: globals.logger,
-    artifacts: globals.artifacts!,
-    processManager: globals.processManager,
-  ),
-  InstallCommand(
-    verboseHelp: verboseHelp,
-  ),
-  LogsCommand(),
-  MakeHostAppEditableCommand(),
-  PackagesCommand(),
-  PrecacheCommand(
-    verboseHelp: verboseHelp,
-    cache: globals.cache,
-    logger: globals.logger,
-    platform: globals.platform,
-    featureFlags: featureFlags,
-  ),
-  RunCommand(verboseHelp: verboseHelp),
-  ScreenshotCommand(fs: globals.fs),
-  ShellCompletionCommand(),
-  TestCommand(verboseHelp: verboseHelp, verbose: verbose),
-  UpgradeCommand(verboseHelp: verboseHelp),
-  SymbolizeCommand(
-    stdio: globals.stdio,
-    fileSystem: globals.fs,
-  ),
-  // Development-only commands. These are always hidden,
-  IdeConfigCommand(),
-  UpdatePackagesCommand(),
+  ButterCleanCommand(verbose: verbose),
+  ButterCreateCommand(verboseHelp: verboseHelp),
+  ButterRunCommand(verboseHelp: verboseHelp),
 ];
 
 /// An abstraction for instantiation of the correct logger type.

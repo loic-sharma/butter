@@ -1,7 +1,8 @@
 name: butter
 description: .NET Bridge to Flutter
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/loic-sharma/butter
+publish_to: none
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -9,6 +10,13 @@ environment:
 dependencies:
   flutter_tools:
     path: third_party/flutter/packages/flutter_tools
+  file: # inherit from flutter_tools
+  meta:
+  package_config:
+  path:
+  process:
+  xml:
+  yaml:
 
 dev_dependencies:
   flutter_test:

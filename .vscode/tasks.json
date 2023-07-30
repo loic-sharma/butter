@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Butter.sln",
+                "${workspaceFolder}/example/butter/Butter.Example.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/Butter.sln",
+                "${workspaceFolder}/example/butter/Butter.Example.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/Butter.sln"
+                "${workspaceFolder}/example/butter/Butter.Example.sln",
             ],
             "problemMatcher": "$msCompile"
         }

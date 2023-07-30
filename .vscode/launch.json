@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/example/butter/bin/Debug/net6.0-windows8.0/Butter.Example.dll",
+            "program": "${workspaceFolder}/example/butter/Runner/bin/Debug/net6.0-windows8.0/Butter.Example.dll",
             "args": [],
             "cwd": "${workspaceFolder}/example",
             "console": "internalConsole",
