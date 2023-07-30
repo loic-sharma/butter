@@ -53,36 +53,31 @@ class BuildButterCommand extends BuildSubCommand {
   @override
   final String description = 'Build a Butter Windows desktop application.';
 
-  /// See: [android.validateBuild] in `build_validation.dart`
-  // void validateBuild(ELinuxBuildInfo eLinuxBuildInfo) {
-  //   if (eLinuxBuildInfo.buildInfo.mode.isPrecompiled &&
-  //       eLinuxBuildInfo.targetArch == 'x86') {
-  //     throwToolExit('x86 ABI does not support AOT compilation.');
-  //   }
-  // }
-
-  /// See: [BuildApkCommand.runCommand] in `build_apk.dart`
   @override
   Future<FlutterCommandResult> runCommand() async {
     final FlutterProject flutterProject = FlutterProject.current();
     final BuildInfo buildInfo = await getBuildInfo();
+    final TargetPlatform targetPlatform = TargetPlatform.windows_x64;
     if (!globals.platform.isWindows) {
       throwToolExit('"build butter" only supported on Windows hosts.');
     }
     displayNullSafetyMode(buildInfo);
-    await _buildButter(
+    await buildButter(
       ButterProject.fromFlutter(flutterProject),
       buildInfo,
+      targetPlatform,
     );
     return FlutterCommandResult.success();
   }
 }
 
-Future<void> _buildButter(ButterProject project, BuildInfo buildInfo) async {
+Future<void> buildButter(
+  ButterProject project,
+  BuildInfo buildInfo,
+  TargetPlatform targetPlatform,
+) async {
   final Artifacts? artifacts = globals.artifacts;
   final FileSystem fs = globals.fs;
-
-  final TargetPlatform targetPlatform = TargetPlatform.windows_x64;
 
   if (artifacts == null) { throw 'Null artifacts'; }
 
