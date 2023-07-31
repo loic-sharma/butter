@@ -46,9 +46,9 @@ class BuildButterCommand extends BuildSubCommand {
 
   @override
   Future<Set<DevelopmentArtifact>> get requiredArtifacts async =>
-      <DevelopmentArtifact>{
-        DevelopmentArtifact.windows
-      };
+    <DevelopmentArtifact>{
+      DevelopmentArtifact.windows
+    };
 
   @override
   final String description = 'Build a Butter Windows desktop application.';
@@ -93,7 +93,9 @@ Future<void> buildButter(
       fs,
     );
 
-    _runDotnetBuild(project);
+    await _createWindowsAotBundle();
+
+    await _runDotnetBuild(project);
   } finally {
     status.stop();
   }
@@ -153,6 +155,12 @@ void _unpackButterArtifacts(
   );
   final File icuDataDestinationFile = fs.file(icuDataDestinationPath);
   icuDataFile.copySync(icuDataDestinationFile.path);
+}
+
+// See: packages\flutter_tools\lib\src\build_system\targets\windows.dart (WindowsAotBundle)
+// See: packages\flutter_tools\lib\src\build_system\targets\common.dart (AotElfBase)
+// See: packages\flutter_tools\lib\src\base\build.dart (AOTSnapshotter)
+Future<void> _createWindowsAotBundle() async {
 }
 
 Future<void> _runDotnetBuild(ButterProject project) async {
