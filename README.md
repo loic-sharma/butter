@@ -22,6 +22,15 @@
    dotnet run --project butter/Runner
    ```
 
+### TODO:
+
+1. Build
+   1. Build Dart app
+   1. Copy C# files into `butter/Flutter/ephemeral`
+   1. Add ephemeral directory to .gitignore, remove tracked files
+1. Create template
+1. Remove `Microsoft.Windows.CsWin32` dependency from user's app
+
 ### Useful resources
 
 1. https://github.com/LiveOrNot/FlutterSharp/blob/8b24bdf14465c090b53ecc04c0c2c2598ae7aff3/FlutterSharp/Integrations/FlutterInterop.cs

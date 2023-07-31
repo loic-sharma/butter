@@ -46,7 +46,7 @@ public class MainWindowAppBuilder
     using var engine = FlutterEngine.Create(new FlutterEngineOptions
     {
       AotLibraryPath = Path.Join(cwd, "build", "windows", "app.so"),
-      IcuDataPath = Path.Join(cwd, "windows", "flutter", "ephemeral", "icudtl.dat"),
+      IcuDataPath = Path.Join("data", "icudtl.dat"),
       AssetsPath = Path.Join(cwd, "build", "flutter_assets"),
       DartArgs = _args,
     });
