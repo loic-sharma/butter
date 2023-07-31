@@ -9,6 +9,7 @@ import 'package:flutter_tools/src/base/common.dart';
 import 'package:flutter_tools/src/base/file_system.dart';
 import 'package:flutter_tools/src/base/logger.dart';
 import 'package:flutter_tools/src/base/os.dart';
+import 'package:flutter_tools/src/base/terminal.dart';
 import 'package:flutter_tools/src/build_info.dart';
 import 'package:flutter_tools/src/commands/build.dart';
 import 'package:flutter_tools/src/artifacts.dart';
@@ -95,12 +96,24 @@ Future<void> buildButter(
 
     await _createWindowsAotBundle();
 
-    await _runDotnetBuild(project);
+    await _runDotnetBuild(project, buildInfo);
   } finally {
     status.stop();
   }
 
-  await Future<void>.value();
+  // TODO: Share this logic with butter_devices.dart
+  final File appFile = project.runnerDirectory
+    .childDirectory('bin')
+    .childDirectory(buildInfo.mode == BuildMode.debug ? 'Debug' : 'Release')
+    .childDirectory('net6.0-windows7.0')
+    .childFile('Butter.Example.exe');
+  if (appFile.existsSync()) {
+    globals.logger.printStatus(
+      '${globals.logger.terminal.successMark}  '
+      'Built ${globals.fs.path.relative(appFile.path)}.',
+      color: TerminalColor.green,
+    );
+  }
 }
 
 // See: packages\flutter_tools\lib\src\build_system\targets\windows.dart
@@ -163,11 +176,16 @@ void _unpackButterArtifacts(
 Future<void> _createWindowsAotBundle() async {
 }
 
-Future<void> _runDotnetBuild(ButterProject project) async {
+Future<void> _runDotnetBuild(ButterProject project, BuildInfo buildInfo) async {
   int result;
   try {
     result = await globals.processUtils.stream(
-      const <String>['dotnet', 'build'],
+      <String>[
+        'dotnet',
+        'build',
+        '-c',
+        buildInfo.mode == BuildMode.debug ? 'Debug' : 'Release',
+      ],
       workingDirectory: project.runnerDirectory.path,
       trace: true,
     );
