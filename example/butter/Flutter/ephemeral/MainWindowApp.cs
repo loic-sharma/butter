@@ -42,12 +42,11 @@ public class MainWindowAppBuilder
 
   public MainWindowApp Build()
   {
-    var cwd = Directory.GetCurrentDirectory();
     using var engine = FlutterEngine.Create(new FlutterEngineOptions
     {
-      AotLibraryPath = Path.Join(cwd, "build", "windows", "app.so"),
+      AotLibraryPath = Path.Join("data", "app.so"),
       IcuDataPath = Path.Join("data", "icudtl.dat"),
-      AssetsPath = Path.Join(cwd, "build", "flutter_assets"),
+      AssetsPath = Path.Join("data", "flutter_assets"),
       DartArgs = _args,
     });
 

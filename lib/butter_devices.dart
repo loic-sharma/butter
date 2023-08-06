@@ -15,8 +15,8 @@ import 'package:flutter_tools/src/runner/flutter_command.dart';
 import 'package:flutter_tools/src/windows/windows_workflow.dart';
 import 'package:process/process.dart';
 
+import 'butter_build.dart';
 import 'butter_project.dart';
-import 'commands/build.dart';
 
 class ButterDeviceManager extends DeviceManager {
   ButterDeviceManager({
@@ -127,20 +127,20 @@ class ButterDevice extends DesktopDevice {
       ButterProject.fromFlutter(FlutterProject.current()),
       buildInfo,
       await targetPlatform,
+      mainPath ?? 'lib/main.dart',
     );
   }
 
   @override
   String executablePathForDevice(ApplicationPackage package, BuildInfo buildInfo) {
     final project = ButterProject.fromFlutter(FlutterProject.current());
+    final buildDir = globals.fs.directory(getButterBuildDirectory());
 
     // TODO:
     // 1. Use build directory
     // 2. Better logic to find the TFM / build mode / app name
-    return project.runnerDirectory
-      .childDirectory('bin')
+    return buildDir
       .childDirectory(buildInfo.mode == BuildMode.debug ? 'Debug' : 'Release')
-      .childDirectory('net6.0-windows7.0')
       .childFile('Butter.Example.exe')
       .path;
   }

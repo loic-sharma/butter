@@ -5,6 +5,7 @@
 
 import 'package:flutter_tools/src/android/build_validation.dart' as android;
 import 'package:flutter_tools/src/base/analyze_size.dart';
+import 'package:flutter_tools/src/base/build.dart';
 import 'package:flutter_tools/src/base/common.dart';
 import 'package:flutter_tools/src/base/file_system.dart';
 import 'package:flutter_tools/src/base/logger.dart';
@@ -16,7 +17,9 @@ import 'package:flutter_tools/src/artifacts.dart';
 import 'package:flutter_tools/src/globals.dart' as globals;
 import 'package:flutter_tools/src/project.dart';
 import 'package:flutter_tools/src/runner/flutter_command.dart';
+import 'package:process/process.dart';
 
+import '../butter_build.dart';
 import '../butter_project.dart';
 
 class ButterBuildCommand extends BuildCommand {
@@ -67,132 +70,8 @@ class BuildButterCommand extends BuildSubCommand {
       ButterProject.fromFlutter(flutterProject),
       buildInfo,
       targetPlatform,
+      targetFile,
     );
     return FlutterCommandResult.success();
-  }
-}
-
-Future<void> buildButter(
-  ButterProject project,
-  BuildInfo buildInfo,
-  TargetPlatform targetPlatform,
-) async {
-  final Artifacts? artifacts = globals.artifacts;
-  final FileSystem fs = globals.fs;
-
-  if (artifacts == null) { throw 'Null artifacts'; }
-
-  final Status status = globals.logger.startProgress(
-    'Building Butter application...',
-  );
-  try {
-    _unpackButterArtifacts(
-      project,
-      buildInfo,
-      targetPlatform,
-      artifacts,
-      fs,
-    );
-
-    await _createWindowsAotBundle();
-
-    await _runDotnetBuild(project, buildInfo);
-  } finally {
-    status.stop();
-  }
-
-  // TODO: Share this logic with butter_devices.dart
-  final File appFile = project.runnerDirectory
-    .childDirectory('bin')
-    .childDirectory(buildInfo.mode == BuildMode.debug ? 'Debug' : 'Release')
-    .childDirectory('net6.0-windows7.0')
-    .childFile('Butter.Example.exe');
-  if (appFile.existsSync()) {
-    globals.logger.printStatus(
-      '${globals.logger.terminal.successMark}  '
-      'Built ${globals.fs.path.relative(appFile.path)}.',
-      color: TerminalColor.green,
-    );
-  }
-}
-
-// See: packages\flutter_tools\lib\src\build_system\targets\windows.dart
-// See: packages\flutter_tools\lib\src\build_system\targets\desktop.dart
-const List<String> _kWindowsArtifacts = <String>[
-  'flutter_windows.dll',
-  'flutter_windows.dll.pdb',
-];
-void _unpackButterArtifacts(
-  ButterProject project,
-  BuildInfo buildInfo,
-  TargetPlatform targetPlatform,
-  Artifacts artifacts,
-  FileSystem fs,
-) {
-  final Directory ephemeralDirectory = project.ephemeralDirectory;
-  final String artifactsPath = artifacts.getArtifactPath(
-    Artifact.windowsDesktopPath,
-    platform: targetPlatform,
-    mode: buildInfo.mode,
-  );
-
-  // Copy Windows artifacts.
-  for (final String artifact in _kWindowsArtifacts) {
-    final String artifactPath = fs.path.join(
-      artifactsPath,
-      artifact,
-    );
-    final FileSystemEntityType artifactType = fs.typeSync(artifactPath);
-    assert(artifactType == FileSystemEntityType.file);
-    final String outputPath = fs.path.join(
-      ephemeralDirectory.path,
-      fs.path.relative(artifactPath, from: artifactsPath),
-    );
-    final File artifactFile = fs.file(artifactPath);
-    final File destinationFile = fs.file(outputPath);
-    if (!destinationFile.parent.existsSync()) {
-      destinationFile.parent.createSync(recursive: true);
-    }
-    artifactFile.copySync(destinationFile.path);
-  }
-
-  // Copy ICU data
-  final String icuDataPath = artifacts.getArtifactPath(
-    Artifact.icuData,
-    platform: targetPlatform,
-  );
-  final File icuDataFile = fs.file(icuDataPath);
-  final String icuDataDestinationPath = fs.path.join(
-    ephemeralDirectory.path,
-    icuDataFile.basename,
-  );
-  final File icuDataDestinationFile = fs.file(icuDataDestinationPath);
-  icuDataFile.copySync(icuDataDestinationFile.path);
-}
-
-// See: packages\flutter_tools\lib\src\build_system\targets\windows.dart (WindowsAotBundle)
-// See: packages\flutter_tools\lib\src\build_system\targets\common.dart (AotElfBase)
-// See: packages\flutter_tools\lib\src\base\build.dart (AOTSnapshotter)
-Future<void> _createWindowsAotBundle() async {
-}
-
-Future<void> _runDotnetBuild(ButterProject project, BuildInfo buildInfo) async {
-  int result;
-  try {
-    result = await globals.processUtils.stream(
-      <String>[
-        'dotnet',
-        'build',
-        '-c',
-        buildInfo.mode == BuildMode.debug ? 'Debug' : 'Release',
-      ],
-      workingDirectory: project.runnerDirectory.path,
-      trace: true,
-    );
-  } on ArgumentError {
-    throwToolExit("dotnet not found. Run 'flutter doctor' for more information.");
-  }
-  if (result != 0) {
-    throwToolExit('.NET build failed');
   }
 }

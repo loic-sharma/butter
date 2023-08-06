@@ -2,6 +2,14 @@
 
 ### Local testing
 
+1. Run the example app using the Butter tool:
+
+   ```
+   cp example
+   dart run ../bin/butter.dart run -d butter
+   ```
+
+
 1. Build engine
 2. Copy the locally built engine to the `example/butter/Flutter/ephemeral` directory:
 
