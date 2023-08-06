@@ -1,17 +1,12 @@
-import 'package:flutter_tools/src/base/common.dart';
+import 'package:flutter_tools/src/application_package.dart';
 import 'package:flutter_tools/src/base/file_system.dart';
 import 'package:flutter_tools/src/base/logger.dart';
 import 'package:flutter_tools/src/base/os.dart';
-import 'package:flutter_tools/src/base/process.dart';
 import 'package:flutter_tools/src/build_info.dart';
-import 'package:flutter_tools/src/commands/build.dart';
-import 'package:flutter_tools/src/application_package.dart';
-import 'package:flutter_tools/src/artifacts.dart';
 import 'package:flutter_tools/src/desktop_device.dart';
 import 'package:flutter_tools/src/device.dart';
 import 'package:flutter_tools/src/globals.dart' as globals;
 import 'package:flutter_tools/src/project.dart';
-import 'package:flutter_tools/src/runner/flutter_command.dart';
 import 'package:flutter_tools/src/windows/windows_workflow.dart';
 import 'package:process/process.dart';
 
@@ -133,13 +128,8 @@ class ButterDevice extends DesktopDevice {
 
   @override
   String executablePathForDevice(ApplicationPackage package, BuildInfo buildInfo) {
-    final project = ButterProject.fromFlutter(FlutterProject.current());
-    final buildDir = globals.fs.directory(getButterBuildDirectory());
-
-    // TODO:
-    // 1. Use build directory
-    // 2. Better logic to find the TFM / build mode / app name
-    return buildDir
+    // TODO: Better logic to find the TFM / build mode / app name
+    return globals.fs.directory(getButterBuildDirectory())
       .childDirectory(buildInfo.mode == BuildMode.debug ? 'Debug' : 'Release')
       .childFile('Butter.Example.exe')
       .path;

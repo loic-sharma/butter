@@ -21,6 +21,7 @@ class ButterCleanCommand extends CleanCommand {
   }
 
   void _cleanButterProject(ButterProject project) {
+    // TODO: run dotnet clean on Butter's solution.
     if (!project.existsSync()) {
       return;
     }

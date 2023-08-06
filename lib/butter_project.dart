@@ -7,7 +7,6 @@ import 'butter_plugins.dart';
 class ButterProject extends FlutterProjectPlatform {
   ButterProject.fromFlutter(this.parent);
 
-  @override
   final FlutterProject parent;
 
   @override

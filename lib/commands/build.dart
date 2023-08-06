@@ -3,21 +3,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter_tools/src/android/build_validation.dart' as android;
-import 'package:flutter_tools/src/base/analyze_size.dart';
-import 'package:flutter_tools/src/base/build.dart';
 import 'package:flutter_tools/src/base/common.dart';
-import 'package:flutter_tools/src/base/file_system.dart';
-import 'package:flutter_tools/src/base/logger.dart';
-import 'package:flutter_tools/src/base/os.dart';
-import 'package:flutter_tools/src/base/terminal.dart';
 import 'package:flutter_tools/src/build_info.dart';
 import 'package:flutter_tools/src/commands/build.dart';
-import 'package:flutter_tools/src/artifacts.dart';
 import 'package:flutter_tools/src/globals.dart' as globals;
 import 'package:flutter_tools/src/project.dart';
 import 'package:flutter_tools/src/runner/flutter_command.dart';
-import 'package:process/process.dart';
 
 import '../butter_build.dart';
 import '../butter_project.dart';
@@ -61,7 +52,7 @@ class BuildButterCommand extends BuildSubCommand {
   Future<FlutterCommandResult> runCommand() async {
     final FlutterProject flutterProject = FlutterProject.current();
     final BuildInfo buildInfo = await getBuildInfo();
-    final TargetPlatform targetPlatform = TargetPlatform.windows_x64;
+    const  TargetPlatform targetPlatform = TargetPlatform.windows_x64;
     if (!globals.platform.isWindows) {
       throwToolExit('"build butter" only supported on Windows hosts.');
     }
