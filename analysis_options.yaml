@@ -2,6 +2,7 @@ include: third_party/flutter/packages/flutter_tools/analysis_options.yaml
 
 analyzer:
   exclude:
+    - dotnet/
     - third_party/
 
 # Allow importing Flutter tool's implementation files.

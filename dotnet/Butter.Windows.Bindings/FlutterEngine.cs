@@ -1,6 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
-using Butter.Windows.Bindings;
-using Windows.Win32.Foundation;
+﻿using Butter.Windows.Bindings;
 
 namespace Butter.Windows;
 
@@ -52,7 +50,7 @@ public class FlutterEngine : IDisposable
 
   public void OnNextFrame(Action callback)
   {
-    // TODO: Listen for next frame and  invoke callbacks.
+    // TODO: Listen for next frame and invoke callbacks.
     callback();
   }
 

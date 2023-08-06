@@ -39,16 +39,17 @@ public class FlutterWindow : IDisposable
       engine,
       frame.Width,
       frame.Height);
+    var viewHwnd = new HWND(controller.View.Hwnd);
 
-    PInvoke.SetParent(controller.View.Hwnd, host);
+    PInvoke.SetParent(viewHwnd, host);
     PInvoke.MoveWindow(
-      controller.View.Hwnd,
+      viewHwnd,
       frame.X,
       frame.Y,
       frame.Width,
       frame.Height,
       bRepaint: true);
-    PInvoke.SetFocus(controller.View.Hwnd);
+    PInvoke.SetFocus(viewHwnd);
 
     // Now wrap window and its view in the FlutterWindow abstraction.
     var window = new FlutterWindow(host, controller);
@@ -94,7 +95,7 @@ public class FlutterWindow : IDisposable
       case PInvoke.WM_SIZE:
         PInvoke.GetClientRect(hwnd, out RECT frame);
         PInvoke.MoveWindow(
-          window._controller.View.Hwnd,
+          new HWND(window._controller.View.Hwnd),
           frame.left,
           frame.top,
           frame.Width,

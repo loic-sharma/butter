@@ -1,17 +1,16 @@
 using Butter.Windows.Bindings;
-using Windows.Win32.Foundation;
 
 namespace Butter.Windows;
 
-internal class FlutterView
+public class FlutterView
 {
   private readonly FlutterDesktopViewRef _viewRef;
 
-  public FlutterView(FlutterDesktopViewRef viewRef, HWND hwnd)
+  public FlutterView(FlutterDesktopViewRef viewRef, IntPtr hwnd)
   {
     _viewRef = viewRef;
     Hwnd = hwnd;
   }
 
-  public HWND Hwnd { get; private set; }
+  public IntPtr Hwnd { get; private set; }
 }

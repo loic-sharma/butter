@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Butter.Windows.Bindings", "Butter.Windows.Bindings\Butter.Windows.Bindings.csproj", "{2CC6C62D-D432-47EC-B833-69D960674815}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Butter.Windows.Win32", "Butter.Windows.Win32\Butter.Windows.Win32.csproj", "{27A4A20A-7A6C-4488-A30E-D418409F24DD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2CC6C62D-D432-47EC-B833-69D960674815}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CC6C62D-D432-47EC-B833-69D960674815}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CC6C62D-D432-47EC-B833-69D960674815}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CC6C62D-D432-47EC-B833-69D960674815}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27A4A20A-7A6C-4488-A30E-D418409F24DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27A4A20A-7A6C-4488-A30E-D418409F24DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27A4A20A-7A6C-4488-A30E-D418409F24DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27A4A20A-7A6C-4488-A30E-D418409F24DD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

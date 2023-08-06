@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 
 namespace Butter.Windows.Bindings;
 
@@ -146,8 +146,8 @@ public static class Flutter
       FlutterDesktopViewControllerRef controller,
       IntPtr hwnd,
       uint message,
-      UIntPtr wParam,
-      IntPtr lParam,
+      nuint wParam,
+      nint lParam,
       out IntPtr result);
 
   [DllImport("flutter_windows")]

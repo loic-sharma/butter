@@ -1,4 +1,4 @@
-using Windows.Win32;
+﻿using Windows.Win32;
 
 namespace Butter.Windows;
 
