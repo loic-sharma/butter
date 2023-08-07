@@ -11,17 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="ephemeral\flutter_windows.dll">
-      <Link>flutter_windows.dll</Link>
+    <None Include="ephemeral\artifacts\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="ephemeral\flutter_windows.dll.pdb">
-      <Link>flutter_windows.dll.pdb</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="ephemeral\icudtl.dat">
-      <Link>data\icudtl.dat</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
     </None>
   </ItemGroup>
 

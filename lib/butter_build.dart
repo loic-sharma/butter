@@ -28,14 +28,9 @@ Future<void> buildButter(
     BuildMode.release => 'Release',
     BuildMode.jitRelease => 'Release',
   };
-  final String outputPath = globals.fs.path.join(getButterBuildDirectory(), buildModeName);
-  final Directory outputDir = globals.fs.directory(outputPath);
-
-  globals.logger.printStatus('Flutter root: ${globals.fs.directory(Cache.flutterRoot).path}');
-
   final Artifacts artifacts = globals.artifacts!;
   final Environment environment = Environment(
-    outputDir: outputDir,
+    outputDir: project.ephemeralDirectory,
     buildDir: project.parent.directory
       .childDirectory('.dart_tool')
       .childDirectory('flutter_build'),
@@ -106,7 +101,9 @@ Future<void> buildButter(
   }
 
   // TODO: Share this logic with butter_devices.dart
-  final File appFile = outputDir.childFile('Butter.Example.exe');
+  final String buildPath = globals.fs.path.join(getButterBuildDirectory(), buildModeName);
+  final Directory buildDir = globals.fs.directory(buildPath);
+  final File appFile = buildDir.childFile('Butter.Example.exe');
   if (appFile.existsSync()) {
     globals.logger.printStatus(
       '${globals.logger.terminal.successMark}  '

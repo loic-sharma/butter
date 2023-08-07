@@ -49,14 +49,7 @@ class UnpackButter extends Target {
     final TargetPlatform targetPlatform = getTargetPlatformForName(
       targetPlatformEnvironment,
     );
-    final Directory ephemeralDirectory = environment.fileSystem.directory(
-      environment.fileSystem.path.join(
-        environment.projectDir.path,
-        'butter',
-        'Flutter',
-        'ephemeral',
-      ),
-    );
+    final Directory ephemeralDirectory = environment.outputDir;
     final Depfile depfile = _unpackButterArtifacts(
       buildMode,
       targetPlatform,
@@ -102,6 +95,7 @@ Depfile _unpackButterArtifacts(
     assert(artifactType == FileSystemEntityType.file);
     final String outputPath = fs.path.join(
       ephemeralDirectory.path,
+      'artifacts',
       fs.path.relative(artifactPath, from: artifactsPath),
     );
     final File artifactFile = fs.file(artifactPath);
@@ -122,9 +116,14 @@ Depfile _unpackButterArtifacts(
   final File icuDataFile = fs.file(icuDataPath);
   final String icuDataDestinationPath = fs.path.join(
     ephemeralDirectory.path,
+    'artifacts',
+    'data',
     icuDataFile.basename,
   );
   final File icuDataDestinationFile = fs.file(icuDataDestinationPath);
+  if (!icuDataDestinationFile.parent.existsSync()) {
+    icuDataDestinationFile.parent.createSync(recursive: true);
+  }
   icuDataFile.copySync(icuDataDestinationFile.path);
   inputs.add(icuDataFile);
   outputs.add(icuDataDestinationFile);
@@ -171,16 +170,15 @@ abstract class BundleButterAssets extends Target {
     );
 
     final Directory outputDirectory = environment.outputDir
+      .childDirectory('artifacts')
       .childDirectory('data')
       .childDirectory('flutter_assets');
-
     if (!outputDirectory.existsSync()) {
       outputDirectory.createSync(recursive: true);
     }
 
     // Only copy the kernel blob in debug mode.
     if (buildMode == BuildMode.debug) {
-
       environment.buildDir.childFile('app.dill')
         .copySync(outputDirectory.childFile('kernel_blob.bin').path);
     }
@@ -217,7 +215,7 @@ class ButterAotBundle extends Target {
   @override
   List<Source> get outputs =>
     const <Source>[
-      Source.pattern('{OUTPUT_DIR}/data/app.so'),
+      Source.pattern('{OUTPUT_DIR}/artifacts/data/app.so'),
     ];
 
   @override
@@ -229,6 +227,7 @@ class ButterAotBundle extends Target {
   Future<void> build(Environment environment) async {
     final File outputFile = environment.buildDir.childFile('app.so');
     final Directory outputDirectory = environment.outputDir
+      .childDirectory('artifacts')
       .childDirectory('data');
     if (!outputDirectory.existsSync()) {
       outputDirectory.createSync(recursive: true);
@@ -282,6 +281,6 @@ class DebugBundleButterAssets extends BundleButterAssets {
 
   @override
   List<Source> get outputs => <Source>[
-    const Source.pattern('{OUTPUT_DIR}/data/flutter_assets/kernel_blob.bin'),
+    const Source.pattern('{OUTPUT_DIR}/artifacts/data/flutter_assets/kernel_blob.bin'),
   ];
 }

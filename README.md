@@ -34,7 +34,6 @@
 
 1. Hot reload
 1. Error on exit
-1. Make `dotnet run` work (need to output assets to `bin`)
 1. Clean should remove obj/bin folders
 1. Plugins
   1. Messaging
