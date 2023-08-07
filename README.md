@@ -32,12 +32,16 @@
 
 ### TODO:
 
-1. Build
-   1. Build Dart app
-   1. Copy C# files into `butter/Flutter/ephemeral`
-   1. Add ephemeral directory to .gitignore, remove tracked files
+1. Hot reload
+1. Error on exit
+1. Clean should remove obj/bin folders
+1. Plugins
+  1. Messaging
+  1. C++ plugins
+  1. Pigeon
 1. Create template
-1. Remove `Microsoft.Windows.CsWin32` dependency from user's app
+1. Figure out if template works if Butter supports multiple target platforms
+   1. Maybe `Butter.Windows` should be `Butter` and `Butter.Windows.Bindings` should be `Butter.Windows`?
 
 ### Useful resources
 
