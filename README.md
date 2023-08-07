@@ -34,6 +34,7 @@
 
 1. Hot reload
 1. Error on exit
+1. Make `dotnet run` work (need to output assets to `bin`)
 1. Clean should remove obj/bin folders
 1. Plugins
   1. Messaging
@@ -42,6 +43,7 @@
 1. Create template
 1. Figure out if template works if Butter supports multiple target platforms
    1. Maybe `Butter.Windows` should be `Butter` and `Butter.Windows.Bindings` should be `Butter.Windows`?
+   1. Maybe instead of packages we shove source files in the ephemeral directory?
 
 ### Useful resources
 
