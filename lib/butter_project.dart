@@ -33,4 +33,7 @@ class ButterProject extends FlutterProjectPlatform {
   /// possible, Flutter tooling should not edit files in this directory after
   /// initial project creation.
   Directory get runnerDirectory => _editableDirectory.childDirectory('Runner');
+
+  /// The file containing the generated configuration for the current build.
+  File get generatedConfigPropsFile => ephemeralDirectory.childFile('GeneratedConfig.props');
 }

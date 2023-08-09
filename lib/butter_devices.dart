@@ -128,10 +128,12 @@ class ButterDevice extends DesktopDevice {
 
   @override
   String executablePathForDevice(ApplicationPackage package, BuildInfo buildInfo) {
+    final project = ButterProject.fromFlutter(FlutterProject.current());
+
     // TODO: Better logic to find the TFM / build mode / app name
     return globals.fs.directory(getButterBuildDirectory())
       .childDirectory(buildInfo.mode == BuildMode.debug ? 'Debug' : 'Release')
-      .childFile('Butter.Example.exe')
+      .childFile('${project.parent.manifest.appName}.exe')
       .path;
   }
 }

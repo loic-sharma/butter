@@ -56,16 +56,18 @@ Future<void> buildButter(
   );
 
   final Target target = switch (buildInfo.mode) {
-    BuildMode.release => ReleaseBundleButterAssets(),
-    BuildMode.jitRelease => ReleaseBundleButterAssets(),
-    BuildMode.profile => ProfileBundleButterAssets(),
-    BuildMode.debug => DebugBundleButterAssets(),
+    BuildMode.release => const ReleaseBundleButterAssets(),
+    BuildMode.jitRelease => const ReleaseBundleButterAssets(),
+    BuildMode.profile => const ProfileBundleButterAssets(),
+    BuildMode.debug => const DebugBundleButterAssets(),
   };
 
   final Status status = globals.logger.startProgress(
     'Building Butter application...',
   );
   try {
+    _writeGeneratedConfig(project, buildInfo);
+
     final BuildResult result = await globals.buildSystem.build(
       target,
       environment,
@@ -77,33 +79,16 @@ Future<void> buildButter(
       throwToolExit('The Butter build failed.');
     }
 
-    // _unpackButterArtifacts(
-    //   project,
-    //   buildInfo,
-    //   targetPlatform,
-    //   artifacts,
-    //   fs,
-    // );
-
-    // await _createWindowsAotBundle(
-    //   buildInfo,
-    //   targetPlatform,
-    //   buildDir,
-    //   artifacts,
-    //   fs,
-    //   globals.processManager,
-    //   globals.logger,
-    // );
-
     await _runDotnetBuild(project, buildInfo);
   } finally {
     status.stop();
   }
 
   // TODO: Share this logic with butter_devices.dart
+  // TODO: Use pubspec yaml to determine app name.
   final String buildPath = globals.fs.path.join(getButterBuildDirectory(), buildModeName);
   final Directory buildDir = globals.fs.directory(buildPath);
-  final File appFile = buildDir.childFile('Butter.Example.exe');
+  final File appFile = buildDir.childFile('${project.parent.manifest.appName}.exe');
   if (appFile.existsSync()) {
     globals.logger.printStatus(
       '${globals.logger.terminal.successMark}  '
@@ -113,45 +98,23 @@ Future<void> buildButter(
   }
 }
 
-// See: packages\flutter_tools\lib\src\build_system\targets\windows.dart (WindowsAotBundle)
-// See: packages\flutter_tools\lib\src\build_system\targets\common.dart (AotElfBase)
-// See: packages\flutter_tools\lib\src\base\build.dart (AOTSnapshotter)
-// Future<void> _createWindowsAotBundle(
-//   BuildInfo buildInfo,
-//   TargetPlatform targetPlatform,
-//   Directory buildDir,
-//   Artifacts artifacts,
-//   FileSystem fs,
-//   ProcessManager processManager,
-//   Logger logger,
-// ) async {
-//   return Future<void>.value();
+void _writeGeneratedConfig(ButterProject project, BuildInfo buildInfo) {
+  final StringBuffer buffer = StringBuffer('''
+<!-- Generated code. Do not modify -->
+<Project>
 
-//   final AOTSnapshotter snapshotter = AOTSnapshotter(
-//     fileSystem: fs,
-//     logger: logger,
-//     xcode: globals.xcode!,
-//     processManager: processManager,
-//     artifacts: artifacts,
-//   );
-//   final String outputPath = buildDir.path;
-//   final List<String> extraGenSnapshotOptions = const <String>[]; // decodeCommaSeparated(environment.defines, kExtraGenSnapshotOptions);
-//   final String? splitDebugInfo = null; // environment.defines[kSplitDebugInfo];
-//   final bool dartObfuscation = false; //environment.defines[kDartObfuscation] == 'true';
+  <PropertyGroup>
+    <FlutterAppName>${project.parent.manifest.appName}</FlutterAppName>
+    <FlutterAppVersion>1.2.3</FlutterAppVersion>
+  </PropertyGroup>
 
-//   final int snapshotExitCode = await snapshotter.build(
-//     platform: targetPlatform,
-//     buildMode: buildInfo.mode,
-//     mainPath: buildDir.childFile('app.dill').path,
-//     outputPath: outputPath,
-//     extraGenSnapshotOptions: extraGenSnapshotOptions,
-//     splitDebugInfo: splitDebugInfo,
-//     dartObfuscation: dartObfuscation,
-//   );
-//   if (snapshotExitCode != 0) {
-//     throw Exception('AOT snapshotter exited with code $snapshotExitCode');
-//   }
-// }
+</Project>
+''');
+
+  project.generatedConfigPropsFile
+    ..createSync(recursive: true)
+    ..writeAsStringSync(buffer.toString());
+}
 
 Future<void> _runDotnetBuild(ButterProject project, BuildInfo buildInfo) async {
   int result;

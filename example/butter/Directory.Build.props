@@ -1,0 +1,5 @@
+<Project>
+
+  <Import Project="Flutter\ephemeral\GeneratedConfig.props" />
+
+</Project>
