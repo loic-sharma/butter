@@ -67,7 +67,7 @@ Future<void> buildButter(
     'Building Butter application...',
   );
   try {
-    _writeGeneratedConfig(project, buildInfo);
+    _writeGeneratedConfig(project, buildInfo, targetFile);
 
     final BuildResult result = await globals.buildSystem.build(
       target,
@@ -99,14 +99,54 @@ Future<void> buildButter(
   }
 }
 
-void _writeGeneratedConfig(ButterProject project, BuildInfo buildInfo) {
-  final StringBuffer buffer = StringBuffer('''
+void _writeGeneratedConfig(
+  ButterProject project,
+  BuildInfo buildInfo,
+  String? target,
+) {
+  final Map<String, String> environment = <String, String>{
+    'BUTTER_ROOT': rootPath,
+    'FLUTTER_EPHEMERAL_DIR': project.ephemeralDirectory.path,
+    'PROJECT_DIR': project.parent.directory.path,
+    if (target != null) 'FLUTTER_TARGET': target,
+    ...buildInfo.toEnvironmentConfig(),
+  };
+  final LocalEngineInfo? localEngineInfo = globals.artifacts?.localEngineInfo;
+  if (localEngineInfo != null) {
+    final String targetOutPath = localEngineInfo.targetOutPath;
+    // Get the engine source root $ENGINE/src/out/foo_bar_baz -> $ENGINE/src
+    environment['FLUTTER_ENGINE'] = globals.fs.path.dirname(globals.fs.path.dirname(targetOutPath));
+    environment['LOCAL_ENGINE'] = localEngineInfo.localTargetName;
+    environment['LOCAL_ENGINE_HOST'] = localEngineInfo.localHostName;
+  }
+
+  final StringBuffer buffer = StringBuffer();
+  buffer.write('''
 <!-- Generated code. Do not modify -->
 <Project>
 
   <PropertyGroup>
     <FlutterAppName>${project.parent.manifest.appName}</FlutterAppName>
     <FlutterAppVersion>1.2.3</FlutterAppVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ButterEnvironmentVariables>''');
+
+  bool first = true;
+  for (final MapEntry<String, String> entry in environment.entries) {
+    if (first) {
+      first = false;
+    } else {
+      buffer.write(';');
+    }
+    buffer.write(entry.key);
+    buffer.write('=');
+    buffer.write(entry.value);
+  }
+  buffer.writeln('</ButterEnvironmentVariables>');
+
+  buffer.write('''
   </PropertyGroup>
 
 </Project>
