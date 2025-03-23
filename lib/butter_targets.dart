@@ -48,7 +48,14 @@ class UnpackButter extends Target {
     final TargetPlatform targetPlatform = getTargetPlatformForName(
       targetPlatformEnvironment,
     );
-    final Directory ephemeralDirectory = environment.outputDir;
+    final Directory ephemeralDirectory = environment.fileSystem.directory(
+      environment.fileSystem.path.join(
+        environment.projectDir.path,
+        'butter',
+        'Flutter',
+        'ephemeral',
+      ),
+    );
     final Depfile depfile = _unpackButterArtifacts(
       buildMode,
       targetPlatform,
@@ -143,6 +150,7 @@ abstract class BundleButterAssets extends Target {
   @override
   List<Source> get inputs => const <Source>[
     // TODO: Verify
+    // TODO: Switch to {BUTTER_ROOT}
     Source.pattern('{FLUTTER_ROOT}/../../lib/butter_targets.dart'),
     Source.pattern('{PROJECT_DIR}/pubspec.yaml'),
     ...IconTreeShaker.inputs,

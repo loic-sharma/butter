@@ -10,7 +10,8 @@ environment:
 dependencies:
   flutter_tools:
     path: third_party/flutter/packages/flutter_tools
-  file: # inherit from flutter_tools
+  args: # inherit from flutter_tools
+  file:
   meta:
   package_config:
   path:

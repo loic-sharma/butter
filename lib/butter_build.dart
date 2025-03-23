@@ -67,8 +67,14 @@ Future<void> buildButter(
     'Building Butter application...',
   );
   try {
-    _writeGeneratedConfig(project, buildInfo, targetFile);
+    _writeGeneratedConfig(
+      Cache.flutterRoot!,
+      project,
+      buildInfo,
+      targetFile,
+    );
 
+    // TODO: This should be unnecessary now. MSBuild calls assemble.
     final BuildResult result = await globals.buildSystem.build(
       target,
       environment,
@@ -100,12 +106,15 @@ Future<void> buildButter(
 }
 
 void _writeGeneratedConfig(
+  String flutterRoot,
   ButterProject project,
   BuildInfo buildInfo,
   String? target,
 ) {
+  final String butterToolBackend = path.join(rootPath, 'bin', 'tool_backend.dart');
   final Map<String, String> environment = <String, String>{
     'BUTTER_ROOT': rootPath,
+    'FLUTTER_ROOT': flutterRoot,
     'FLUTTER_EPHEMERAL_DIR': project.ephemeralDirectory.path,
     'PROJECT_DIR': project.parent.directory.path,
     if (target != null) 'FLUTTER_TARGET': target,
@@ -120,6 +129,7 @@ void _writeGeneratedConfig(
     environment['LOCAL_ENGINE_HOST'] = localEngineInfo.localHostName;
   }
 
+
   final StringBuffer buffer = StringBuffer();
   buffer.write('''
 <!-- Generated code. Do not modify -->
@@ -131,6 +141,8 @@ void _writeGeneratedConfig(
   </PropertyGroup>
 
   <PropertyGroup>
+    <FlutterRoot>$flutterRoot</FlutterRoot>
+    <ButterToolBackend>$butterToolBackend</ButterToolBackend>
     <ButterEnvironmentVariables>''');
 
   bool first = true;
@@ -140,6 +152,7 @@ void _writeGeneratedConfig(
     } else {
       buffer.write(';');
     }
+    // TODO: Escape these.
     buffer.write(entry.key);
     buffer.write('=');
     buffer.write(entry.value);

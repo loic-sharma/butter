@@ -20,6 +20,7 @@ import 'package:flutter_tools/src/runner/flutter_command.dart';
 import 'package:flutter_tools/src/windows/windows_workflow.dart';
 
 import 'butter_devices.dart';
+import 'commands/assemble.dart';
 import 'commands/build.dart';
 import 'commands/clean.dart';
 import 'commands/create.dart';
@@ -104,6 +105,9 @@ List<FlutterCommand> generateCommands({
   DoctorCommand(verbose: verbose),
 
   // Butter's commands
+  ButterAssembleCommand(
+    buildSystem: globals.buildSystem,
+  ),
   ButterBuildCommand(
     artifacts: globals.artifacts!,
     fileSystem: globals.fs,

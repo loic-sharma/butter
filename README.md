@@ -32,17 +32,21 @@
 
 ### TODO:
 
+1. Support x64 and arm64
 1. Hot reload
 1. Error on exit
 1. Clean should remove obj/bin folders
 1. Plugins
-  1. Messaging
+  1. Dart plugins
   1. C++ plugins
+  1. Plugin registration
+  1. Messaging
   1. Pigeon
 1. Create template
 1. Figure out if template works if Butter supports multiple target platforms
    1. Maybe `Butter.Windows` should be `Butter` and `Butter.Windows.Bindings` should be `Butter.Windows`?
    1. Maybe instead of packages we shove source files in the ephemeral directory?
+1. Local engine
 
 ### Useful resources
 
@@ -50,3 +54,19 @@
 2. https://github.com/microsoft/CsWin32/blob/abb1b3de5bc2298cf3919a8cf724e7d18ea916c7/test/WinRTInteropTest/Program.cs#L79
 3. https://github.com/timsneath/win32_runner/blob/main/lib/src/window.dart
 4. https://github.com/sony/flutter-elinux
+
+### Running assemble manually
+
+In the `example/` dir, run:
+
+```ps1
+dart-stable run ../bin/butter.dart `
+  --verbose `
+  assemble `
+  --no-version-check `
+  --output=build `
+  -dTargetPlatform=windows-x64 `
+  -dBuildMode=debug `
+  -dTargetFile="lib/main.dart" `
+  debug_bundle_butter_assets
+```
