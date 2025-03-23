@@ -2,47 +2,25 @@
 
 ### Local testing
 
-1. Run the example app using the Butter tool:
+Run the example app using the Butter tool:
 
-   ```
-   cp example
-   dart run ../bin/butter.dart run -d butter
-   ```
-
-
-1. Build engine
-2. Copy the locally built engine to the `example/butter/Flutter/ephemeral` directory:
-
-   ```
-   cp C:\Code\f\engine\src\out\host_debug_unopt\flutter_windows.dll C:\Code\butter\example\butter\Flutter\ephemeral
-   ```
-
-3. Run the example app once using the local engine:
-
-   ```
-   cd example
-   flutter run -d windows --local-engine host_debug_unopt
-   ```
-
-4. Now run the example app using Butter:
-
-   ```
-   dotnet run --project butter/Runner
-   ```
+```
+cp example
+dart run ../bin/butter.dart run -d butter
+```
 
 ### TODO:
 
+1. Clean should remove obj/bin/ephemeral folders
+1. Create template
 1. Support x64 and arm64
-1. Hot reload
 1. Error on exit
-1. Clean should remove obj/bin folders
 1. Plugins
   1. Dart plugins
   1. C++ plugins
   1. Plugin registration
   1. Messaging
   1. Pigeon
-1. Create template
 1. Figure out if template works if Butter supports multiple target platforms
    1. Maybe `Butter.Windows` should be `Butter` and `Butter.Windows.Bindings` should be `Butter.Windows`?
    1. Maybe instead of packages we shove source files in the ephemeral directory?

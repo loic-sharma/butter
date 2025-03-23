@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <Target Name="ButterAssemble" BeforeTargets="Build">
-    <Message Text="Running assemble" Importance="high" />
+    <Message Text="Running Butter assemble" Importance="high" />
     <!-- TODO: Don't hard code target platform and build mode -->
     <Exec
       Command="$(FlutterRoot)\bin\cache\dart-sdk\bin\dart $(ButterToolBackend) windows-x64 debug"
