@@ -6,12 +6,14 @@ import 'package:flutter_tools/src/base/platform.dart';
 import 'package:flutter_tools/src/base/template.dart';
 import 'package:flutter_tools/src/base/terminal.dart';
 import 'package:flutter_tools/src/base/user_messages.dart';
+import 'package:flutter_tools/src/build_system/build_targets.dart';
 import 'package:flutter_tools/src/cache.dart';
 import 'package:flutter_tools/src/commands/daemon.dart';
 import 'package:flutter_tools/src/commands/doctor.dart';
 import 'package:flutter_tools/src/device.dart';
 import 'package:flutter_tools/src/globals.dart' as globals;
 // Files in `isolated` are intentionally excluded from google3 tooling.
+import 'package:flutter_tools/src/isolated/build_targets.dart';
 import 'package:flutter_tools/src/isolated/mustache_template.dart';
 import 'package:flutter_tools/src/pre_run_validator.dart';
 import 'package:flutter_tools/src/runner/flutter_command.dart';
@@ -73,6 +75,7 @@ Future<void> main(List<String> args) async {
         windowsWorkflow: windowsWorkflow!,
       ),
       TemplateRenderer: () => const MustacheTemplateRenderer(),
+      BuildTargets: () => const BuildTargetsImpl(),
       Logger: () {
         final LoggerFactory loggerFactory = LoggerFactory(
           outputPreferences: globals.outputPreferences,
@@ -102,11 +105,13 @@ List<FlutterCommand> generateCommands({
 
   // Butter's commands
   ButterBuildCommand(
+    artifacts: globals.artifacts!,
     fileSystem: globals.fs,
     buildSystem: globals.buildSystem,
     osUtils: globals.os,
     verboseHelp: verboseHelp,
     androidSdk: globals.androidSdk,
+    processUtils: globals.processUtils,
     logger: globals.logger,
   ),
   ButterCleanCommand(verbose: verbose),

@@ -7,7 +7,6 @@ import 'package:flutter_tools/src/build_system/exceptions.dart';
 import 'package:flutter_tools/src/build_system/targets/assets.dart';
 import 'package:flutter_tools/src/build_system/targets/common.dart';
 import 'package:flutter_tools/src/build_system/targets/icon_tree_shaker.dart';
-import 'package:flutter_tools/src/build_system/targets/shader_compiler.dart';
 
 // Forked from packages\flutter_tools\lib\src\build_system\targets\windows.dart
 
@@ -187,7 +186,7 @@ abstract class BundleButterAssets extends Target {
       environment,
       outputDirectory,
       targetPlatform: targetPlatform,
-      shaderTarget: ShaderTarget.sksl,
+      buildMode: buildMode,
     );
     environment.depFileService.writeToFile(
       depfile,

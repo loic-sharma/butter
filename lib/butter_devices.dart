@@ -117,6 +117,7 @@ class ButterDevice extends DesktopDevice {
   Future<void> buildForDevice({
     String? mainPath,
     required BuildInfo buildInfo,
+    bool usingCISystem = false,
   }) async {
     await buildButter(
       ButterProject.fromFlutter(FlutterProject.current()),

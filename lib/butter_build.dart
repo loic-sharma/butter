@@ -5,6 +5,7 @@ import 'package:flutter_tools/src/base/logger.dart';
 import 'package:flutter_tools/src/base/terminal.dart';
 import 'package:flutter_tools/src/build_info.dart';
 import 'package:flutter_tools/src/build_system/build_system.dart';
+import 'package:flutter_tools/src/dart/package_map.dart';
 import 'package:flutter_tools/src/cache.dart';
 import 'package:flutter_tools/src/globals.dart' as globals;
 import 'package:path/path.dart' as path;
@@ -49,10 +50,10 @@ Future<void> buildButter(
     processManager: globals.processManager,
     usage: globals.flutterUsage,
     platform: globals.platform,
-    engineVersion: artifacts.isLocalEngine
-      ? null
-      : globals.flutterVersion.engineRevision,
+    engineVersion: globals.flutterVersion.engineRevision,
     generateDartPluginRegistry: true,
+    analytics: globals.analytics,
+    packageConfigPath: findPackageConfigFileOrDefault(project.parent.directory).path,
   );
 
   final Target target = switch (buildInfo.mode) {

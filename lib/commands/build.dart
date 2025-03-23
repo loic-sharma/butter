@@ -15,11 +15,13 @@ import '../butter_project.dart';
 
 class ButterBuildCommand extends BuildCommand {
   ButterBuildCommand({
+    required super.artifacts,
     required super.fileSystem,
     required super.buildSystem,
     required super.osUtils,
     required bool verboseHelp,
     required super.androidSdk,
+    required super.processUtils,
     required super.logger,
   }) : super(verboseHelp: verboseHelp) {
     addSubcommand(BuildButterCommand(verboseHelp: verboseHelp));
