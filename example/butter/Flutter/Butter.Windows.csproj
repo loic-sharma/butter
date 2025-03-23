@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <!-- TODO: Move everything here to a .proj file in the ephemeral directory -->
   <PropertyGroup>
     <BuildDependsOn>ButterAssemble;$(BuildDependsOn)</BuildDependsOn>
   </PropertyGroup>
