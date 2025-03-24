@@ -8,6 +8,8 @@ import 'package:flutter_tools/src/build_system/targets/assets.dart';
 import 'package:flutter_tools/src/build_system/targets/common.dart';
 import 'package:flutter_tools/src/build_system/targets/icon_tree_shaker.dart';
 
+import 'butter_build.dart';
+
 // Forked from packages\flutter_tools\lib\src\build_system\targets\windows.dart
 
 const String _kButterDepfile = 'butter_sources.d';
@@ -76,6 +78,9 @@ const List<String> _kWindowsArtifacts = <String>[
   'flutter_windows.dll',
   'flutter_windows.dll.pdb',
 ];
+const List<String> _kButterSources = <String>[
+  // 'FlutterException.cs',
+];
 Depfile _unpackButterArtifacts(
   BuildMode buildMode,
   TargetPlatform targetPlatform,
@@ -93,25 +98,42 @@ Depfile _unpackButterArtifacts(
 
   // Copy Windows artifacts.
   for (final String artifact in _kWindowsArtifacts) {
-    final String artifactPath = fs.path.join(
-      artifactsPath,
-      artifact,
-    );
-    final FileSystemEntityType artifactType = fs.typeSync(artifactPath);
-    assert(artifactType == FileSystemEntityType.file);
+    final String artifactPath = fs.path.join(artifactsPath, artifact);
     final String outputPath = fs.path.join(
       ephemeralDirectory.path,
       'artifacts',
-      fs.path.relative(artifactPath, from: artifactsPath),
+      artifact
     );
-    final File artifactFile = fs.file(artifactPath);
-    final File destinationFile = fs.file(outputPath);
-    if (!destinationFile.parent.existsSync()) {
-      destinationFile.parent.createSync(recursive: true);
-    }
-    artifactFile.copySync(destinationFile.path);
-    inputs.add(artifactFile);
-    outputs.add(destinationFile);
+    _unpackArtifact(
+      fs,
+      artifactPath,
+      outputPath,
+      inputs,
+      outputs,
+    );
+  }
+
+  // Copy Butter sources.
+  for (final String source in _kButterSources) {
+    final String artifactPath = fs.path.join(
+      rootPath,
+      'templates',
+      'app',
+      'butter.tmpl',
+      'Flutter',
+      source,
+    );
+    final String outputPath = fs.path.join(
+      ephemeralDirectory.path,
+      source,
+    );
+    _unpackArtifact(
+      fs,
+      artifactPath,
+      outputPath,
+      inputs,
+      outputs,
+    );
   }
 
   // Copy ICU data
@@ -120,21 +142,40 @@ Depfile _unpackButterArtifacts(
     platform: targetPlatform,
   );
   final File icuDataFile = fs.file(icuDataPath);
-  final String icuDataDestinationPath = fs.path.join(
+  final String icuDataOutputPath = fs.path.join(
     ephemeralDirectory.path,
     'artifacts',
     'data',
     icuDataFile.basename,
   );
-  final File icuDataDestinationFile = fs.file(icuDataDestinationPath);
-  if (!icuDataDestinationFile.parent.existsSync()) {
-    icuDataDestinationFile.parent.createSync(recursive: true);
-  }
-  icuDataFile.copySync(icuDataDestinationFile.path);
-  inputs.add(icuDataFile);
-  outputs.add(icuDataDestinationFile);
+  _unpackArtifact(fs, icuDataPath, icuDataOutputPath, inputs, outputs);
+
 
   return Depfile(inputs, outputs);
+}
+
+void _unpackArtifact(
+  FileSystem fileSystem,
+  String inputPath,
+  String outputPath,
+  List<File> inputs,
+  List<File> outputs,
+) {
+  final FileSystemEntityType entityType = fileSystem.typeSync(inputPath);
+  if (entityType == FileSystemEntityType.notFound ||
+      entityType == FileSystemEntityType.directory ||
+      entityType == FileSystemEntityType.link) {
+    throw Exception('Unsupported file type "$entityType" for $inputPath');
+  }
+  assert(entityType == FileSystemEntityType.file);
+  final File destinationFile = fileSystem.file(outputPath);
+  if (!destinationFile.parent.existsSync()) {
+    destinationFile.parent.createSync(recursive: true);
+  }
+  final File inputFile = fileSystem.file(inputPath);
+  inputFile.copySync(destinationFile.path);
+  inputs.add(inputFile);
+  outputs.add(destinationFile);
 }
 
 /// Creates a bundle for the Windows Butter desktop target.
