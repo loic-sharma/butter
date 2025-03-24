@@ -11,10 +11,11 @@ dart run ../bin/butter.dart run -d butter
 
 ### TODO:
 
+1. Add entrypoints
+1. Tool and Flutter SDK can be out of sync.
 1. Clean should remove obj/bin/ephemeral folders
 1. Create template
 1. Support x64 and arm64
-1. Error on exit
 1. Plugins
   1. Dart plugins
   1. C++ plugins
@@ -23,7 +24,6 @@ dart run ../bin/butter.dart run -d butter
   1. Pigeon
 1. Figure out if template works if Butter supports multiple target platforms
    1. Maybe `Butter.Windows` should be `Butter` and `Butter.Windows.Bindings` should be `Butter.Windows`?
-   1. Maybe instead of packages we shove source files in the ephemeral directory?
 1. Local engine
 
 ### Useful resources
