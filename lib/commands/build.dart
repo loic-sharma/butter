@@ -36,6 +36,11 @@ class BuildButterCommand extends BuildSubCommand {
           logger: globals.logger,
         ) {
     addCommonDesktopBuildOptions(verboseHelp: verboseHelp);
+    argParser.addFlag(
+      'config-only',
+      help: 'Generate build files used by flutter but '
+            'do not build any artifacts.',
+    );
   }
 
   @override
@@ -54,7 +59,8 @@ class BuildButterCommand extends BuildSubCommand {
   Future<FlutterCommandResult> runCommand() async {
     final FlutterProject flutterProject = FlutterProject.current();
     final BuildInfo buildInfo = await getBuildInfo();
-    const  TargetPlatform targetPlatform = TargetPlatform.windows_x64;
+    const TargetPlatform targetPlatform = TargetPlatform.windows_x64;
+    final bool configOnly = boolArg('config-only');
     if (!globals.platform.isWindows) {
       throwToolExit('"build butter" only supported on Windows hosts.');
     }
@@ -64,6 +70,7 @@ class BuildButterCommand extends BuildSubCommand {
       buildInfo,
       targetPlatform,
       targetFile,
+      configOnly: configOnly
     );
     return FlutterCommandResult.success();
   }

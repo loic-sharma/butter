@@ -1,4 +1,5 @@
 import 'package:file/file.dart';
+import 'package:flutter_tools/src/base/common.dart';
 import 'package:flutter_tools/src/base/logger.dart';
 import 'package:flutter_tools/src/commands/clean.dart';
 import 'package:flutter_tools/src/globals.dart' as globals;
@@ -21,10 +22,10 @@ class ButterCleanCommand extends CleanCommand {
   }
 
   void _cleanButterProject(ButterProject project) {
-    // TODO: run dotnet clean on Butter's solution.
     if (!project.existsSync()) {
       return;
     }
+    _runDotnetClean(project);
     _deleteFile(project.ephemeralDirectory);
   }
 
@@ -44,5 +45,24 @@ class ButterCleanCommand extends CleanCommand {
     } finally {
       status.stop();
     }
+  }
+}
+
+Future<void> _runDotnetClean(ButterProject project) async {
+  int result;
+  try {
+    result = await globals.processUtils.stream(
+      <String>[
+        'dotnet',
+        'clean',
+        project.hostAppRoot.path,
+      ],
+      trace: true,
+    );
+  } on ArgumentError {
+    throwToolExit("dotnet not found. Run 'flutter doctor' for more information.");
+  }
+  if (result != 0) {
+    throwToolExit('.NET clean failed');
   }
 }

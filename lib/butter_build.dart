@@ -21,8 +21,9 @@ Future<void> buildButter(
   ButterProject project,
   BuildInfo buildInfo,
   TargetPlatform targetPlatform,
-  String targetFile,
-) async {
+  String targetFile, {
+  bool configOnly = false,
+}) async {
   final String buildModeName = switch (buildInfo.mode) {
     BuildMode.debug => 'Debug',
     BuildMode.profile => 'Profile',
@@ -74,19 +75,21 @@ Future<void> buildButter(
       targetFile,
     );
 
-    // TODO: This should be unnecessary now. MSBuild calls assemble.
-    final BuildResult result = await globals.buildSystem.build(
-      target,
-      environment,
-    );
-    if (!result.success) {
-      for (final ExceptionMeasurement measurement in result.exceptions.values) {
-        globals.printError(measurement.exception.toString());
+    if (!configOnly) {
+      // TODO: This should be unnecessary now. MSBuild calls assemble.
+      final BuildResult result = await globals.buildSystem.build(
+        target,
+        environment,
+      );
+      if (!result.success) {
+        for (final ExceptionMeasurement measurement in result.exceptions.values) {
+          globals.printError(measurement.exception.toString());
+        }
+        throwToolExit('The Butter build failed.');
       }
-      throwToolExit('The Butter build failed.');
-    }
 
-    await _runDotnetBuild(project, buildInfo);
+      await _runDotnetBuild(project, buildInfo);
+    }
   } finally {
     status.stop();
   }

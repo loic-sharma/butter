@@ -19,6 +19,8 @@ class ButterProject extends FlutterProjectPlatform {
 
   Directory get _editableDirectory => parent.directory.childDirectory(_childDirectory);
 
+  Directory get hostAppRoot => _editableDirectory;
+
   /// The directory in the project that is managed by Flutter. As much as
   /// possible, files that are edited by Flutter tooling after initial project
   /// creation should live here.
