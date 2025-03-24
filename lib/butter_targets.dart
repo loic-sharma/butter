@@ -79,7 +79,11 @@ const List<String> _kWindowsArtifacts = <String>[
   'flutter_windows.dll.pdb',
 ];
 const List<String> _kButterSources = <String>[
-  // 'FlutterException.cs',
+  'Bindings.cs',
+  'FlutterEngine.cs',
+  'FlutterException.cs',
+  'FlutterView.cs',
+  'FlutterViewController.cs',
 ];
 Depfile _unpackButterArtifacts(
   BuildMode buildMode,

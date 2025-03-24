@@ -12,10 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\dotnet\Butter.Windows.Win32\Butter.Windows.Win32.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="ephemeral\artifacts\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
