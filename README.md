@@ -15,6 +15,7 @@ dart run ../bin/butter.dart run -d butter
 1. Tool and Flutter SDK can be out of sync.
 1. Clean should remove obj/bin/ephemeral folders
 1. Create template
+1. TODO: Test that templates copied from Flutter are up-todate. Ensure not missing new templates.
 1. Support x64 and arm64
 1. Plugins
   1. Dart plugins
