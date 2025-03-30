@@ -39,14 +39,16 @@ After:
     1. WPF
     1. WinForms
 1. Pigeon
-1. TODO: Test that templates copied from Flutter are up-to-date. Ensure not missing new templates.
+1. Tests
+    1. Integration tests
+    1. Test that templates copied from Flutter are up-to-date. Ensure not missing new templates.
 1. Local engine
 1. Support x64 and arm64
 1. Docs
     1. Add-to-app
     1. How to bind to native code
-    1. 
     1. How to deploy Butter app
+1. NativeAOT
 
 ### Useful resources
 
