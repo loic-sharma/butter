@@ -29,6 +29,7 @@ Initial:
     1. How to create a plugin
     1. How to find pub.dev plugins
     1. How to debug C# code
+1. Do a pass on TODOs.
 1. Check .NET public APIs. Make stuff internal. Add comments.
 
 After:
