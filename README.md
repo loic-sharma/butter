@@ -17,18 +17,18 @@ Initial:
 1. Tool and Flutter SDK can be out of sync. Make butter use its own Flutter tool
 1. Clean should remove obj/bin/ephemeral folders
 1. Plugins
-  1. Dart plugins
-  1. C++ plugins
-  1. Plugin registration
-  1. Messaging
+    1. Dart plugins
+    1. C++ plugins
+    1. Plugin registration
+    1. Messaging
 1. Update README
 1. Docs using https://docs.page
-  1. Get started
-    1. How to install VS Code + .NET
-  1. Changelog
-  1. How to create a plugin
-  1. How to find pub.dev plugins
-  1. How to debug C# code
+    1. Get started
+        1. How to install VS Code + .NET
+    1. Changelog
+    1. How to create a plugin
+    1. How to find pub.dev plugins
+    1. How to debug C# code
 
 
 After:
