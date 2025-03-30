@@ -1,0 +1,58 @@
+{
+  "name": "Butter",
+  "description": ".NET bindings to Flutter",
+  "sidebar": [
+    {
+      "group": "Get started",
+      "pages": [
+        {
+          "title": "Overview",
+          "href": "/"
+        },
+        {
+          "title": "Installation",
+          "href": "/install"
+        },
+        {
+          "title": "Debugging",
+          "href": "/debugging"
+        }
+      ]
+    },
+    {
+      "group": "Plugins",
+      "pages": [
+        {
+          "title": "Overview",
+          "href": "/plugins"
+        },
+        {
+          "title": "Creating plugins",
+          "href": "/creating-plugins"
+        }
+      ]
+    },
+    {
+      "group": "Add-to-app",
+      "pages": [
+        {
+          "title": "WPF",
+          "href": "/wpf"
+        },
+        {
+          "title": "WinForms",
+          "href": "/winforms"
+        }
+      ]
+    },
+    {
+      "group": "Misc",
+      "pages": [
+        {
+          "title": "Changelog",
+          "href": "/changelog"
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # Butter
 
+.NET bindings to Flutter.
+
 ### Local testing
 
 Run the example app using the Butter tool:
@@ -19,6 +21,7 @@ Initial:
   1. C++ plugins
   1. Plugin registration
   1. Messaging
+1. Update README
 1. Docs using https://docs.page
   1. Get started
     1. How to install VS Code + .NET
@@ -30,6 +33,7 @@ Initial:
 
 After:
 1. Doctor command
+1. Upgrade command
 1. Add-to-app
     1. Win32
     1. WPF
