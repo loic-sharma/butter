@@ -11,21 +11,38 @@ dart run ../bin/butter.dart run -d butter
 
 ### TODO:
 
-1. Add entrypoint scripts
-1. Tool and Flutter SDK can be out of sync.
+Initial:
+1. Tool and Flutter SDK can be out of sync. Make butter use its own Flutter tool
 1. Clean should remove obj/bin/ephemeral folders
-1. Create template
-1. TODO: Test that templates copied from Flutter are up-todate. Ensure not missing new templates.
-1. Support x64 and arm64
 1. Plugins
   1. Dart plugins
   1. C++ plugins
   1. Plugin registration
   1. Messaging
-  1. Pigeon
-1. Figure out if template works if Butter supports multiple target platforms
-   1. Maybe `Butter.Windows` should be `Butter` and `Butter.Windows.Bindings` should be `Butter.Windows`?
+1. Docs using https://docs.page
+  1. Get started
+    1. How to install VS Code + .NET
+  1. Changelog
+  1. How to create a plugin
+  1. How to find pub.dev plugins
+  1. How to debug C# code
+
+
+After:
+1. Doctor command
+1. Add-to-app
+    1. Win32
+    1. WPF
+    1. WinForms
+1. Pigeon
+1. TODO: Test that templates copied from Flutter are up-to-date. Ensure not missing new templates.
 1. Local engine
+1. Support x64 and arm64
+1. Docs
+    1. Add-to-app
+    1. How to bind to native code
+    1. 
+    1. How to deploy Butter app
 
 ### Useful resources
 
