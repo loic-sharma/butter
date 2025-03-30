@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Butter.Windows", "Flutter\Butter.Windows.csproj", "{657D7FC4-4FA7-446F-A5B3-5FD1D7C9A36A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runner", "Runner\Runner.csproj", "{C5BD1E2C-B3F3-4204-B9F1-B2C8684F18B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Butter.Windows.Bindings", "..\..\dotnet\Butter.Windows.Bindings\Butter.Windows.Bindings.csproj", "{531C3053-3402-4B2F-B473-FC8130A9E807}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Butter.Windows.Win32", "..\..\dotnet\Butter.Windows.Win32\Butter.Windows.Win32.csproj", "{AA78940F-EF20-438F-A0EA-AA70E3C45BEC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{657D7FC4-4FA7-446F-A5B3-5FD1D7C9A36A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{657D7FC4-4FA7-446F-A5B3-5FD1D7C9A36A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{657D7FC4-4FA7-446F-A5B3-5FD1D7C9A36A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{657D7FC4-4FA7-446F-A5B3-5FD1D7C9A36A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5BD1E2C-B3F3-4204-B9F1-B2C8684F18B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5BD1E2C-B3F3-4204-B9F1-B2C8684F18B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5BD1E2C-B3F3-4204-B9F1-B2C8684F18B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5BD1E2C-B3F3-4204-B9F1-B2C8684F18B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{531C3053-3402-4B2F-B473-FC8130A9E807}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{531C3053-3402-4B2F-B473-FC8130A9E807}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{531C3053-3402-4B2F-B473-FC8130A9E807}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{531C3053-3402-4B2F-B473-FC8130A9E807}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA78940F-EF20-438F-A0EA-AA70E3C45BEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA78940F-EF20-438F-A0EA-AA70E3C45BEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA78940F-EF20-438F-A0EA-AA70E3C45BEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA78940F-EF20-438F-A0EA-AA70E3C45BEC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

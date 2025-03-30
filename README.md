@@ -11,7 +11,7 @@ dart run ../bin/butter.dart run -d butter
 
 ### TODO:
 
-1. Add entrypoints
+1. Add entrypoint scripts
 1. Tool and Flutter SDK can be out of sync.
 1. Clean should remove obj/bin/ephemeral folders
 1. Create template

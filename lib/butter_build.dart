@@ -12,6 +12,7 @@ import 'package:path/path.dart' as path;
 
 import 'butter_project.dart';
 import 'butter_targets.dart';
+import 'common.dart';
 
 String getButterBuildDirectory() {
   return globals.fs.path.join(getBuildDirectory(), 'butter');
@@ -44,7 +45,7 @@ Future<void> buildButter(
       ...buildInfo.toBuildSystemEnvironment(),
     },
     cacheDir: globals.cache.getRoot(),
-    flutterRootDir: globals.fs.directory(path.join(rootPath, 'third_party', 'flutter')),
+    flutterRootDir: globals.fs.directory(path.join(butterRootPath, 'third_party', 'flutter')),
     artifacts: artifacts,
     fileSystem: globals.fs,
     logger: globals.logger,
@@ -114,9 +115,9 @@ void _writeGeneratedConfig(
   BuildInfo buildInfo,
   String? target,
 ) {
-  final String butterToolBackend = path.join(rootPath, 'bin', 'tool_backend.dart');
+  final String butterToolBackend = path.join(butterRootPath, 'bin', 'tool_backend.dart');
   final Map<String, String> environment = <String, String>{
-    'BUTTER_ROOT': rootPath,
+    'BUTTER_ROOT': butterRootPath,
     'FLUTTER_ROOT': flutterRoot,
     'FLUTTER_EPHEMERAL_DIR': project.ephemeralDirectory.path,
     'PROJECT_DIR': project.parent.directory.path,
@@ -195,13 +196,4 @@ Future<void> _runDotnetBuild(ButterProject project, BuildInfo buildInfo) async {
   if (result != 0) {
     throwToolExit('.NET build failed');
   }
-}
-
-/// See: [Cache.defaultFlutterRoot] in `cache.dart`
-String get rootPath {
-  final String scriptPath = globals.platform.script.toFilePath();
-  return path.normalize(path.join(
-    scriptPath,
-    scriptPath.endsWith('.snapshot') ? '../../..' : '../..',
-  ));
 }

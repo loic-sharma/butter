@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0-windows7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- TODO: Move everything here to a .proj file in the ephemeral directory -->
+  <PropertyGroup>
+    <BuildDependsOn>ButterAssemble;$(BuildDependsOn)</BuildDependsOn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="ephemeral\artifacts\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </None>
+  </ItemGroup>
+
+  <Target Name="ButterAssemble" BeforeTargets="Build">
+    <Message Text="Running Butter assemble" Importance="high" />
+    <!-- TODO: Don't hard code target platform and build mode -->
+    <Exec
+      Command="$(FlutterRoot)\bin\cache\dart-sdk\bin\dart $(ButterToolBackend) windows-x64 $(Configuration)"
+      EnvironmentVariables="$(ButterEnvironmentVariables)" />
+  </Target>
+
+</Project>

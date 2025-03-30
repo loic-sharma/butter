@@ -17,9 +17,11 @@ import 'package:flutter_tools/src/isolated/build_targets.dart';
 import 'package:flutter_tools/src/isolated/mustache_template.dart';
 import 'package:flutter_tools/src/pre_run_validator.dart';
 import 'package:flutter_tools/src/runner/flutter_command.dart';
+import 'package:flutter_tools/src/template.dart';
 import 'package:flutter_tools/src/windows/windows_workflow.dart';
 
 import 'butter_devices.dart';
+import 'butter_template.dart';
 import 'commands/assemble.dart';
 import 'commands/build.dart';
 import 'commands/clean.dart';
@@ -75,6 +77,7 @@ Future<void> main(List<String> args) async {
         operatingSystemUtils: globals.os,
         windowsWorkflow: windowsWorkflow!,
       ),
+      TemplatePathProvider: () => const ButterTemplatePathProvider(),
       TemplateRenderer: () => const MustacheTemplateRenderer(),
       BuildTargets: () => const BuildTargetsImpl(),
       Logger: () {

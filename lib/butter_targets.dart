@@ -9,6 +9,7 @@ import 'package:flutter_tools/src/build_system/targets/common.dart';
 import 'package:flutter_tools/src/build_system/targets/icon_tree_shaker.dart';
 
 import 'butter_build.dart';
+import 'common.dart';
 
 // Forked from packages\flutter_tools\lib\src\build_system\targets\windows.dart
 
@@ -120,11 +121,9 @@ Depfile _unpackButterArtifacts(
   // Copy Butter sources.
   for (final String source in _kButterSources) {
     final String artifactPath = fs.path.join(
-      rootPath,
+      butterRootPath,
       'templates',
-      'app',
-      'butter.tmpl',
-      'Flutter',
+      'butter_ephemeral',
       source,
     );
     final String outputPath = fs.path.join(
