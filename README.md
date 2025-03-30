@@ -29,7 +29,7 @@ Initial:
     1. How to create a plugin
     1. How to find pub.dev plugins
     1. How to debug C# code
-
+1. Check .NET public APIs. Make stuff internal. Add comments.
 
 After:
 1. Doctor command
@@ -48,6 +48,7 @@ After:
     1. Add-to-app
     1. How to bind to native code
     1. How to deploy Butter app
+    1. .NET API reference
 1. NativeAOT
 
 ### Useful resources
