@@ -29,6 +29,10 @@ Initial:
     1. How to create a plugin
     1. How to find pub.dev plugins
     1. How to debug C# code
+    1. CLI [tab](https://use.docs.page/navigation#tab-navigation)
+        1. Build command
+        1. Create command
+        1. Etc...
 1. Do a pass on TODOs.
 1. Check .NET public APIs. Make stuff internal. Add comments.
 
