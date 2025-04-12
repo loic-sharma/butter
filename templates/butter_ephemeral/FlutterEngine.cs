@@ -18,10 +18,12 @@ public class FlutterEngineOptions
 public class FlutterEngine : IDisposable
 {
   private readonly EngineHandle _handle;
+  private readonly FlutterBinaryMessenger _messenger;
 
-  internal FlutterEngine(EngineHandle handle)
+  internal FlutterEngine(EngineHandle handle, FlutterBinaryMessenger messenger)
   {
     _handle = handle;
+    _messenger = messenger;
   }
 
   public static FlutterEngine Create(FlutterEngineOptions options)
@@ -37,13 +39,20 @@ public class FlutterEngine : IDisposable
         DartEntrypointArgv = IntPtr.Zero,
     };
 
-    var handle = Flutter.FlutterDesktopEngineCreate(properties)
-      ?? throw new FlutterException("Failed to create FlutterEngine");
+    var handle = Flutter.FlutterDesktopEngineCreate(properties);
+    if (handle.IsInvalid)
+    {
+      throw new FlutterException("Failed to create FlutterEngine");
+    }
 
-    return new FlutterEngine(handle);
+    var messengerHandle = Flutter.FlutterDesktopEngineGetMessenger(handle);
+    var messenger = new FlutterBinaryMessenger(messengerHandle);
+
+    return new FlutterEngine(handle, messenger);
   }
 
   internal EngineHandle Handle => _handle;
+  public FlutterBinaryMessenger Messenger =>_messenger;
 
   public bool Run() => Flutter.FlutterDesktopEngineRun(_handle, entryPoint: null);
 

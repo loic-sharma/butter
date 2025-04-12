@@ -22,6 +22,14 @@ internal class EngineHandle : FlutterSafeHandle
 {
     protected override bool ReleaseHandle()
     {
+        // TODO: Currently the view controller owns the engine, if there is a view controller.
+        // Destroying the view controller also destroys the engine.
+        // After multi-window, the engine will be owned separately.
+        if (IsClosed)
+        {
+            return true;
+        }
+
         return Flutter.FlutterDesktopEngineDestroy(handle);
     }
 }
@@ -39,9 +47,6 @@ internal class ViewHandle : FlutterSafeHandle
 { }
 
 internal class PluginRegistrarHandle : FlutterSafeHandle
-{ }
-
-internal class MessageResponseHandle : FlutterSafeHandle
 { }
 
 internal class MessengerHandle : FlutterSafeHandle
@@ -80,6 +85,13 @@ internal struct FlutterDesktopEngineProperties
 }
 
 [StructLayout(LayoutKind.Sequential)]
+struct FlutterDesktopViewControllerProperties {
+  public int Width;
+
+  public int Height;
+}
+
+[StructLayout(LayoutKind.Sequential)]
 internal struct FlutterDesktopMessage
 {
   public IntPtr StructSize;
@@ -112,6 +124,11 @@ internal static class Flutter
       int width,
       int height,
       EngineHandle engine);
+
+  [DllImport("flutter_windows")]
+  public static extern ViewControllerHandle FlutterDesktopEngineCreateViewController(
+      EngineHandle engine,
+      FlutterDesktopViewControllerProperties properties);
 
   [DllImport("flutter_windows")]
   public static extern void FlutterDesktopViewControllerDestroy(
@@ -229,7 +246,7 @@ internal static class Flutter
   [DllImport("flutter_windows")]
   public static extern void FlutterDesktopMessengerSendResponse(
       MessengerHandle messenger,
-      MessageResponseHandle handle,
+      IntPtr handle,
       byte[] data,
       IntPtr dataLength);
 
@@ -246,7 +263,7 @@ internal static class Flutter
   public static extern void FlutterDesktopMessengerSetCallback(
       MessengerHandle messenger,
       [MarshalAs(UnmanagedType.LPStr)] string channel,
-      FlutterDesktopMessageCallback callback,
+      FlutterDesktopMessageCallback? callback,
       IntPtr userData);
 
   [DllImport("flutter_windows")]

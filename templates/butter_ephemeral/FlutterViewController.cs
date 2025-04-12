@@ -25,8 +25,11 @@ public class FlutterViewController : IDisposable
     int height)
   {
     var engineHandle = engine.Handle;
-    var handle = Flutter.FlutterDesktopViewControllerCreate(width, height, engineHandle)
-      ?? throw new FlutterException("Failed to create FlutterViewController");
+    var handle = Flutter.FlutterDesktopViewControllerCreate(width, height, engineHandle);
+    if (handle.IsInvalid)
+    {
+      throw new FlutterException("Failed to create FlutterViewController");
+    }
 
     var viewHandle = Flutter.FlutterDesktopViewControllerGetView(handle);
     var hwnd = Flutter.FlutterDesktopViewGetHWND(viewHandle);
@@ -63,6 +66,10 @@ public class FlutterViewController : IDisposable
   {
     if (disposing)
     {
+      // TODO: Currently the view controller owns the engine, if there is a view controller.
+      // Destroying the view controller also destroys the engine.
+      // After multi-window, the engine will be owned separately.
+      Engine.Handle.SetHandleAsInvalid();
       _handle.Dispose();
     }
   }

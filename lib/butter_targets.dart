@@ -76,8 +76,11 @@ const List<String> _kWindowsArtifacts = <String>[
 ];
 const List<String> _kButterSources = <String>[
   'Bindings.cs',
+  'FlutterBasicMessageChannel.cs',
+  'FlutterBinaryMessenger.cs',
   'FlutterEngine.cs',
   'FlutterException.cs',
+  'FlutterMessageCodecs.cs',
   'FlutterView.cs',
   'FlutterViewController.cs',
   'GeneratedProject.proj',
