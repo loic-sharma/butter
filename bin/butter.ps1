@@ -1,7 +1,9 @@
-$flutterRoot = $env:FLUTTER_ROOT
-$dartExe = Join-Path $flutterRoot 'bin\cache\dart-sdk\bin\dart.exe'
-
-$binPath = $PSScriptRoot 
+$binPath = $PSScriptRoot
+$butterRoot = Resolve-Path -Path (Join-Path $binPath '..')
+$flutterRoot = Join-Path $butterRoot 'third_party\flutter'
+$dartBat = Join-Path $flutterRoot 'bin\dart.bat'
 $butterPath = Join-Path $binPath 'butter.dart'
 
-& $dartExe run $butterPath @args
+$env:FLUTTER_ROOT = $flutterRoot
+
+& $dartBat run $butterPath @args
