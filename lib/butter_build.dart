@@ -188,7 +188,6 @@ Future<void> _runDotnetBuild(ButterProject project, BuildInfo buildInfo) async {
         '-o',
         globals.fs.path.join(getButterBuildDirectory(), buildMode),
       ],
-      trace: true,
     );
   } on ArgumentError {
     throwToolExit("dotnet not found. Run 'flutter doctor' for more information.");
