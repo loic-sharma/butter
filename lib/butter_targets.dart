@@ -84,6 +84,7 @@ const List<String> _kButterSources = <String>[
   'FlutterException.cs',
   'FlutterView.cs',
   'FlutterViewController.cs',
+  'GeneratedProject.proj',
 ];
 Depfile _unpackButterArtifacts(
   BuildMode buildMode,
