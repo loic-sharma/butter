@@ -1,5 +1,5 @@
 <Project>
 
-  <Import Project="Flutter\ephemeral\GeneratedConfig.props" />
+  <Import Project="Butter.Windows\ephemeral\GeneratedConfig.props" />
 
 </Project>

@@ -7,7 +7,9 @@ import 'package:flutter_tools/src/build_system/exceptions.dart';
 import 'package:flutter_tools/src/build_system/targets/assets.dart';
 import 'package:flutter_tools/src/build_system/targets/common.dart';
 import 'package:flutter_tools/src/build_system/targets/icon_tree_shaker.dart';
+import 'package:flutter_tools/src/project.dart';
 
+import 'butter_project.dart';
 import 'common.dart';
 
 // Forked from packages\flutter_tools\lib\src\build_system\targets\windows.dart
@@ -50,18 +52,12 @@ class UnpackButter extends Target {
     final TargetPlatform targetPlatform = getTargetPlatformForName(
       targetPlatformEnvironment,
     );
-    final Directory ephemeralDirectory = environment.fileSystem.directory(
-      environment.fileSystem.path.join(
-        environment.projectDir.path,
-        'butter',
-        'Flutter',
-        'ephemeral',
-      ),
-    );
+    final FlutterProject flutterProject = FlutterProject.fromDirectory(environment.projectDir);
+    final ButterProject butterProject = ButterProject.fromFlutter(flutterProject);
     final Depfile depfile = _unpackButterArtifacts(
       buildMode,
       targetPlatform,
-      ephemeralDirectory,
+      butterProject.ephemeralDirectory,
       environment.fileSystem,
       environment.artifacts,
     );
