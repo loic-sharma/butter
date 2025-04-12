@@ -17,12 +17,11 @@ public class FlutterEngineOptions
 
 public class FlutterEngine : IDisposable
 {
-  private readonly FlutterDesktopEngineRef _engineRef;
-  private bool _ownsEngine = true;
+  private readonly EngineHandle _handle;
 
-  public FlutterEngine(FlutterDesktopEngineRef engineRef)
+  internal FlutterEngine(EngineHandle handle)
   {
-    _engineRef = engineRef;
+    _handle = handle;
   }
 
   public static FlutterEngine Create(FlutterEngineOptions options)
@@ -38,15 +37,17 @@ public class FlutterEngine : IDisposable
         DartEntrypointArgv = IntPtr.Zero,
     };
 
-    var engineRef = Flutter.FlutterDesktopEngineCreate(properties)
+    var handle = Flutter.FlutterDesktopEngineCreate(properties)
       ?? throw new FlutterException("Failed to create FlutterEngine");
 
-    return new FlutterEngine(engineRef);
+    return new FlutterEngine(handle);
   }
 
-  public bool Run() => Flutter.FlutterDesktopEngineRun(_engineRef, entryPoint: null);
+  internal EngineHandle Handle => _handle;
 
-  public void ReloadSystemFonts() => Flutter.FlutterDesktopEngineReloadSystemFonts(_engineRef);
+  public bool Run() => Flutter.FlutterDesktopEngineRun(_handle, entryPoint: null);
+
+  public void ReloadSystemFonts() => Flutter.FlutterDesktopEngineReloadSystemFonts(_handle);
 
   public void OnNextFrame(Action callback)
   {
@@ -54,17 +55,17 @@ public class FlutterEngine : IDisposable
     callback();
   }
 
-  internal FlutterDesktopEngineRef RelinquishEngine()
-  {
-    _ownsEngine = false;
-    return _engineRef;
-  }
-
   public void Dispose()
   {
-    if (_ownsEngine)
+    Dispose(true);
+    GC.SuppressFinalize(this);
+  }
+
+  protected virtual void Dispose(bool disposing)
+  {
+    if (disposing)
     {
-      Flutter.FlutterDesktopEngineDestroy(_engineRef);
+      _handle.Dispose();
     }
   }
 }

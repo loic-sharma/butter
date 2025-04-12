@@ -15,11 +15,13 @@ dart run ../bin/butter.dart run -d butter
 
 Initial:
 1. Clean should remove obj/bin/ephemeral folders
+1. Make .NET build errors show up in butter ouptut.
 1. Plugins
-    1. Dart plugins
-    1. C++ plugins
+    1. Plugin template
     1. Plugin registration
     1. Messaging
+    1. Dart plugins
+    1. C++ plugins
 1. Update README
 1. Docs using https://docs.page
     1. Get started

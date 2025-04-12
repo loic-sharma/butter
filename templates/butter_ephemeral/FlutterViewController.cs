@@ -4,14 +4,14 @@ namespace Butter.Windows;
 
 public class FlutterViewController : IDisposable
 {
-  private readonly FlutterDesktopViewControllerRef _controllerRef;
+  private readonly ViewControllerHandle _handle;
 
-  public FlutterViewController(
-    FlutterDesktopViewControllerRef controllerRef,
+  internal FlutterViewController(
+    ViewControllerHandle handle,
     FlutterEngine engine,
     FlutterView view)
   {
-    _controllerRef = controllerRef;
+    _handle = handle;
     Engine = engine;
     View = view;
   }
@@ -24,15 +24,15 @@ public class FlutterViewController : IDisposable
     int width,
     int height)
   {
-    var engineRef = engine.RelinquishEngine();
-    var controllerRef = Flutter.FlutterDesktopViewControllerCreate(width, height, engineRef)
+    var engineHandle = engine.Handle;
+    var handle = Flutter.FlutterDesktopViewControllerCreate(width, height, engineHandle)
       ?? throw new FlutterException("Failed to create FlutterViewController");
 
-    var viewRef = Flutter.FlutterDesktopViewControllerGetView(controllerRef);
-    var hwnd = Flutter.FlutterDesktopViewGetHWND(viewRef);
-    var view = new FlutterView(viewRef, hwnd);
+    var viewHandle = Flutter.FlutterDesktopViewControllerGetView(handle);
+    var hwnd = Flutter.FlutterDesktopViewGetHWND(viewHandle);
+    var view = new FlutterView(viewHandle, hwnd);
 
-    return new FlutterViewController(controllerRef, engine, view);
+    return new FlutterViewController(handle, engine, view);
   }
 
   public bool TryHandleTopLevelWindowProc(
@@ -42,7 +42,7 @@ public class FlutterViewController : IDisposable
     out nint? result)
   {
     var handled = Flutter.FlutterDesktopViewControllerHandleTopLevelWindowProc(
-        _controllerRef,
+        _handle,
         View.Hwnd,
         message,
         wParam,
@@ -55,6 +55,15 @@ public class FlutterViewController : IDisposable
 
   public void Dispose()
   {
-    Flutter.FlutterDesktopViewControllerDestroy(_controllerRef);
+    Dispose(true);
+    GC.SuppressFinalize(this);
+  }
+
+  protected virtual void Dispose(bool disposing)
+  {
+    if (disposing)
+    {
+      _handle.Dispose();
+    }
   }
 }

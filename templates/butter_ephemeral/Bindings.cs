@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace Butter.Windows.Bindings;
 
 // TODO: Add generated code to source control: https://andrewlock.net/creating-a-source-generator-part-6-saving-source-generator-output-in-source-control/
-public abstract class FlutterSafeHandle : SafeHandle
+internal abstract class FlutterSafeHandle : SafeHandle
 {
   public FlutterSafeHandle(bool ownsHandle = true) : base(IntPtr.Zero, ownsHandle)
   {
@@ -18,60 +18,48 @@ public abstract class FlutterSafeHandle : SafeHandle
   }
 }
 
-public class FlutterDesktopViewControllerState : FlutterSafeHandle
-{ }
-
-public class FlutterDesktopViewControllerRef : FlutterDesktopViewControllerState
-{ }
-
-public class FlutterDesktopView : FlutterSafeHandle
-{ }
-
-public class FlutterDesktopViewRef : FlutterDesktopView
-{ }
-
-public class FlutterDesktopEngine : FlutterSafeHandle
-{ }
-
-public class FlutterDesktopEngineRef : FlutterDesktopEngine
-{ }
-
-public class FlutterDesktopPluginRegistrar : FlutterSafeHandle
-{ }
-
-public class FlutterDesktopPluginRegistrarRef : FlutterSafeHandle
-{ }
-
-public class FlutterDesktopMessageResponseHandle : FlutterSafeHandle
+internal class EngineHandle : FlutterSafeHandle
 {
-  public static implicit operator FlutterDesktopMessageResponseHandle(IntPtr handle)
-  {
-    return new FlutterDesktopMessageResponseHandle { handle = handle };
-  }
+    protected override bool ReleaseHandle()
+    {
+        return Flutter.FlutterDesktopEngineDestroy(handle);
+    }
 }
 
-public class FlutterDesktopMessenger : FlutterSafeHandle
+internal class ViewControllerHandle : FlutterSafeHandle
+{
+    protected override bool ReleaseHandle()
+    {
+        Flutter.FlutterDesktopViewControllerDestroy(handle);
+        return true;
+    }
+}
+
+internal class ViewHandle : FlutterSafeHandle
 { }
 
-public class FlutterDesktopMessengerRef : FlutterSafeHandle
+internal class PluginRegistrarHandle : FlutterSafeHandle
 { }
 
-public class FlutterDesktopTextureRegistrar : FlutterSafeHandle
+internal class MessageResponseHandle : FlutterSafeHandle
 { }
 
-public class FlutterDesktopTextureRegistrarRef : FlutterSafeHandle
+internal class MessengerHandle : FlutterSafeHandle
 { }
 
-public delegate void FlutterDesktopBinaryReply(byte[] data, IntPtr dataSize, IntPtr userData);
+internal class TextureRegistrarHandle : FlutterSafeHandle
+{ }
 
-public delegate void FlutterDesktopOnPluginRegistrarDestroyed(FlutterDesktopPluginRegistrarRef registrar);
+internal delegate void FlutterDesktopBinaryReply(byte[] data, IntPtr dataSize, IntPtr userData);
 
-public delegate void FlutterDesktopMessageCallback(IntPtr messenger, FlutterDesktopMessage message, IntPtr userData);
+internal delegate void FlutterDesktopOnPluginRegistrarDestroyed(PluginRegistrarHandle registrar);
 
-public delegate bool FlutterDesktopWindowProcCallback(IntPtr hwnd, uint uMsg, IntPtr wParam, IntPtr lParam, IntPtr userData, IntPtr result);
+internal delegate void FlutterDesktopMessageCallback(IntPtr messenger, FlutterDesktopMessage message, IntPtr userData);
+
+internal delegate bool FlutterDesktopWindowProcCallback(IntPtr hwnd, uint uMsg, IntPtr wParam, IntPtr lParam, IntPtr userData, IntPtr result);
 
 [StructLayout(LayoutKind.Sequential)]
-public struct FlutterDesktopEngineProperties
+internal struct FlutterDesktopEngineProperties
 {
   [MarshalAs(UnmanagedType.LPWStr)]
   public string? AssetsPath;
@@ -92,7 +80,7 @@ public struct FlutterDesktopEngineProperties
 }
 
 [StructLayout(LayoutKind.Sequential)]
-public struct FlutterDesktopMessage
+internal struct FlutterDesktopMessage
 {
   public IntPtr StructSize;
 
@@ -106,7 +94,7 @@ public struct FlutterDesktopMessage
   public IntPtr ResponseHandle;
 }
 
-public static class Flutter
+internal static class Flutter
 {
   public static IntPtr CreateSwitches(string[] switches)
   {
@@ -120,30 +108,30 @@ public static class Flutter
   }
 
   [DllImport("flutter_windows")]
-  public static extern FlutterDesktopViewControllerRef FlutterDesktopViewControllerCreate(
+  public static extern ViewControllerHandle FlutterDesktopViewControllerCreate(
       int width,
       int height,
-      FlutterDesktopEngineRef engine);
+      EngineHandle engine);
 
   [DllImport("flutter_windows")]
   public static extern void FlutterDesktopViewControllerDestroy(
-      FlutterDesktopViewControllerRef controller);
+      IntPtr controller);
 
   [DllImport("flutter_windows")]
-  public static extern FlutterDesktopEngineRef FlutterDesktopViewControllerGetEngine(
-      FlutterDesktopViewControllerRef controller);
+  public static extern IntPtr FlutterDesktopViewControllerGetEngine(
+      ViewControllerHandle controller);
 
   [DllImport("flutter_windows")]
-  public static extern FlutterDesktopViewRef FlutterDesktopViewControllerGetView(
-      FlutterDesktopViewControllerRef controller);
+  public static extern ViewHandle FlutterDesktopViewControllerGetView(
+      ViewControllerHandle controller);
 
   [DllImport("flutter_windows")]
   public static extern void FlutterDesktopViewControllerForceRedraw(
-      FlutterDesktopViewControllerRef controller);
+      ViewControllerHandle controller);
 
   [DllImport("flutter_windows")]
   public static extern bool FlutterDesktopViewControllerHandleTopLevelWindowProc(
-      FlutterDesktopViewControllerRef controller,
+      ViewControllerHandle controller,
       IntPtr hwnd,
       uint message,
       nuint wParam,
@@ -151,76 +139,76 @@ public static class Flutter
       out IntPtr result);
 
   [DllImport("flutter_windows")]
-  public static extern FlutterDesktopEngineRef FlutterDesktopEngineCreate(
+  public static extern EngineHandle FlutterDesktopEngineCreate(
       FlutterDesktopEngineProperties engineProperties);
 
   [DllImport("flutter_windows")]
   public static extern bool FlutterDesktopEngineDestroy(
-      FlutterDesktopEngineRef engine);
+      IntPtr engine);
 
   [DllImport("flutter_windows")]
   public static extern bool FlutterDesktopEngineRun(
-      FlutterDesktopEngineRef engine,
+      EngineHandle engine,
       [MarshalAs(UnmanagedType.LPStr)] string? entryPoint);
 
   [DllImport("flutter_windows")]
   public static extern ulong FlutterDesktopEngineProcessMessages(
-      FlutterDesktopEngineRef engine);
+      EngineHandle engine);
 
   [DllImport("flutter_windows")]
   public static extern void FlutterDesktopEngineReloadSystemFonts(
-      FlutterDesktopEngineRef engine);
+      EngineHandle engine);
 
   [DllImport("flutter_windows")]
   public static extern void FlutterDesktopEngineReloadPlatformBrightness(
-      FlutterDesktopEngineRef engine);
+      EngineHandle engine);
 
   [DllImport("flutter_windows")]
-  public static extern FlutterDesktopPluginRegistrarRef FlutterDesktopEngineGetPluginRegistrar(
-      FlutterDesktopEngineRef engine,
+  public static extern PluginRegistrarHandle FlutterDesktopEngineGetPluginRegistrar(
+      EngineHandle engine,
       [MarshalAs(UnmanagedType.LPStr)] string pluginName);
 
   [DllImport("flutter_windows")]
-  public static extern FlutterDesktopMessengerRef FlutterDesktopEngineGetMessenger(
-      FlutterDesktopEngineRef engine);
+  public static extern MessengerHandle FlutterDesktopEngineGetMessenger(
+      EngineHandle engine);
 
   [DllImport("flutter_windows")]
-  public static extern FlutterDesktopTextureRegistrarRef FlutterDesktopEngineGetTextureRegistrar(
-      FlutterDesktopTextureRegistrarRef textureRegistrar);
+  public static extern TextureRegistrarHandle FlutterDesktopEngineGetTextureRegistrar(
+      EngineHandle engine);
 
   [DllImport("flutter_windows")]
   public static extern IntPtr FlutterDesktopViewGetHWND(
-      FlutterDesktopViewRef view);
+      ViewHandle view);
 
   [DllImport("flutter_windows")]
-  public static extern FlutterDesktopViewRef FlutterDesktopPluginRegistrarGetView(
-      FlutterDesktopPluginRegistrarRef registrar);
+  public static extern ViewHandle FlutterDesktopPluginRegistrarGetView(
+      PluginRegistrarHandle registrar);
 
   [DllImport("flutter_windows")]
   public static extern void FlutterDesktopPluginRegistrarRegisterTopLevelWindowProcDelegate(
-      FlutterDesktopPluginRegistrarRef registrar,
+      PluginRegistrarHandle registrar,
       FlutterDesktopWindowProcCallback callback,
       IntPtr userData);
 
   [DllImport("flutter_windows")]
   public static extern void FlutterDesktopPluginRegistrarUnregisterTopLevelWindowProcDelegate(
-      FlutterDesktopPluginRegistrarRef registrar,
+      PluginRegistrarHandle registrar,
       FlutterDesktopWindowProcCallback callback);
 
   [DllImport("flutter_windows")]
   public static extern void FlutterDesktopResyncOutputStreams();
 
   [DllImport("flutter_windows")]
-  public static extern FlutterDesktopMessengerRef FlutterDesktopPluginRegistrarGetMessenger(
-      FlutterDesktopPluginRegistrarRef registrar);
+  public static extern MessengerHandle FlutterDesktopPluginRegistrarGetMessenger(
+      PluginRegistrarHandle registrar);
 
   [DllImport("flutter_windows")]
-  public static extern FlutterDesktopTextureRegistrarRef FlutterDesktopRegistrarGetTextureRegistrar(
-      FlutterDesktopPluginRegistrarRef registrar);
+  public static extern TextureRegistrarHandle FlutterDesktopRegistrarGetTextureRegistrar(
+      PluginRegistrarHandle registrar);
 
   [DllImport("flutter_windows")]
   public static extern void FlutterDesktopPluginRegistrarSetDestructionHandler(
-      FlutterDesktopPluginRegistrarRef registrar,
+      IntPtr registrar,
       FlutterDesktopOnPluginRegistrarDestroyed callback);
 
   [DllImport("flutter_windows")]
@@ -233,21 +221,21 @@ public static class Flutter
 
   [DllImport("flutter_windows")]
   public static extern bool FlutterDesktopMessengerSend(
-      FlutterDesktopMessengerRef messenger,
+      MessengerHandle messenger,
       [MarshalAs(UnmanagedType.LPStr)] string channel,
       byte[] message,
       IntPtr messageSize);
 
   [DllImport("flutter_windows")]
   public static extern void FlutterDesktopMessengerSendResponse(
-      FlutterDesktopMessengerRef messenger,
-      FlutterDesktopMessageResponseHandle handle,
+      MessengerHandle messenger,
+      MessageResponseHandle handle,
       byte[] data,
       IntPtr dataLength);
 
   [DllImport("flutter_windows")]
   public static extern bool FlutterDesktopMessengerSendWithReply(
-      FlutterDesktopMessengerRef messenger,
+      MessengerHandle messenger,
       [MarshalAs(UnmanagedType.LPStr)] string channel,
       byte[] message,
       IntPtr messageSize,
@@ -256,18 +244,18 @@ public static class Flutter
 
   [DllImport("flutter_windows")]
   public static extern void FlutterDesktopMessengerSetCallback(
-      FlutterDesktopMessengerRef messenger,
+      MessengerHandle messenger,
       [MarshalAs(UnmanagedType.LPStr)] string channel,
       FlutterDesktopMessageCallback callback,
       IntPtr userData);
 
   [DllImport("flutter_windows")]
   public static extern bool FlutterDesktopTextureRegistrarUnregisterExternalTexture(
-      FlutterDesktopTextureRegistrarRef textureRegistrar,
+      TextureRegistrarHandle textureRegistrar,
       long textureId);
 
   [DllImport("flutter_windows")]
   public static extern bool FlutterDesktopTextureRegistrarMarkExternalTextureFrameAvailable(
-      FlutterDesktopTextureRegistrarRef textureRegistrar,
+      TextureRegistrarHandle textureRegistrar,
       long textureId);
 }

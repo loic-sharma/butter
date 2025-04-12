@@ -42,7 +42,7 @@ public class MainWindowAppBuilder
 
   public MainWindowApp Build()
   {
-    using var engine = FlutterEngine.Create(new FlutterEngineOptions
+    var engine = FlutterEngine.Create(new FlutterEngineOptions
     {
       AotLibraryPath = Path.Join("data", "app.so"),
       IcuDataPath = Path.Join("data", "icudtl.dat"),
@@ -58,7 +58,7 @@ public class MainWindowAppBuilder
 
     engine.OnNextFrame(window.Show);
 
-    return new MainWindowApp(window);
+    return new MainWindowApp(engine, window);
   }
 }
 
@@ -74,11 +74,13 @@ public class MainWindowApp : IDisposable
     return CreateBuilder(args).Build();
   }
 
-  internal MainWindowApp(FlutterWindow window)
+  internal MainWindowApp(FlutterEngine engine, FlutterWindow window)
   {
+    Engine = engine;
     MainWindow = window;
   }
 
+  public FlutterEngine Engine { get; }
   public FlutterWindow MainWindow { get; }
 
   public void Run()
@@ -90,5 +92,17 @@ public class MainWindowApp : IDisposable
     }
   }
 
-  public void Dispose() => MainWindow.Dispose();
+  public void Dispose() {
+    Dispose(true);
+    GC.SuppressFinalize(this);
+  }
+
+  protected virtual void Dispose(bool disposing)
+  {
+    if (disposing)
+    {
+      MainWindow.Dispose();
+      Engine.Dispose();
+    }
+  }
 }

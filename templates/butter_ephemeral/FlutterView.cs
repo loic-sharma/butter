@@ -4,11 +4,11 @@ namespace Butter.Windows;
 
 public class FlutterView
 {
-  private readonly FlutterDesktopViewRef _viewRef;
+  private readonly ViewHandle _handle;
 
-  public FlutterView(FlutterDesktopViewRef viewRef, IntPtr hwnd)
+  internal FlutterView(ViewHandle handle, IntPtr hwnd)
   {
-    _viewRef = viewRef;
+    _handle = handle;
     Hwnd = hwnd;
   }
 

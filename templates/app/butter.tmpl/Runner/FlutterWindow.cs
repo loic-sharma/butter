@@ -122,11 +122,20 @@ public class FlutterWindow : IDisposable
 
   public void Dispose()
   {
-    if (Windows.ContainsKey(Hwnd))
+    Dispose(true);
+    GC.SuppressFinalize(this);
+  }
+
+  protected virtual void Dispose(bool disposing)
+  {
+    if (disposing)
     {
-      Windows.Remove(Hwnd);
-      _controller.Dispose();
-      PInvoke.DestroyWindow(Hwnd);
+      if (Windows.ContainsKey(Hwnd))
+      {
+        Windows.Remove(Hwnd);
+        _controller.Dispose();
+        PInvoke.DestroyWindow(Hwnd);
+      }
     }
   }
 }
