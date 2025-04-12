@@ -19,6 +19,7 @@ Initial:
     1. Plugin template
     1. Plugin registration
     1. Messaging
+        1. Standard message codec
     1. Dart plugins
     1. C++ plugins
 1. Update README
