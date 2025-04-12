@@ -14,6 +14,7 @@ dart run ../bin/butter.dart run -d butter
 ### TODO:
 
 Initial:
+1. Clean up Butter.Windows.csproj. Move stuff to ephemeral
 1. Tool and Flutter SDK can be out of sync. Make butter use its own Flutter tool
 1. Clean should remove obj/bin/ephemeral folders
 1. Plugins
@@ -55,6 +56,7 @@ After:
     1. How to deploy Butter app
     1. .NET API reference
 1. NativeAOT
+1. Games: Godot and Unity
 
 ### Useful resources
 
