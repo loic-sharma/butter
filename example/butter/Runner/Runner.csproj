@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Butter.Windows\Butter.Windows.csproj" />
+    <ProjectReference Include="..\Butter\Butter.csproj" />
   </ItemGroup>
 
   <ItemGroup>
