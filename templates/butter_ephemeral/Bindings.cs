@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace Butter.Bindings;
 
-// TODO: Add generated code to source control: https://andrewlock.net/creating-a-source-generator-part-6-saving-source-generator-output-in-source-control/
+// TODO: Move everything to Interop class below?
 internal abstract class FlutterSafeHandle : SafeHandle
 {
   public FlutterSafeHandle(bool ownsHandle = true) : base(IntPtr.Zero, ownsHandle)
@@ -106,6 +106,7 @@ internal struct FlutterDesktopMessage
   public IntPtr ResponseHandle;
 }
 
+// TODO: Rename to Interop?
 internal static class Flutter
 {
   public static IntPtr CreateSwitches(string[] switches)
