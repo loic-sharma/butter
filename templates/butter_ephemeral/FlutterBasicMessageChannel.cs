@@ -1,4 +1,4 @@
-namespace Butter.Windows;
+namespace Butter;
 
 public delegate Task<T> MessageHandler<T>(T message);
 

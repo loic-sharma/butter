@@ -1,4 +1,4 @@
-using Butter.Windows;
+using Butter;
 
 namespace Butter.Example;
 

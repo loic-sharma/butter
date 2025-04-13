@@ -5,7 +5,7 @@ using Windows.Win32.Graphics.Dwm;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
 
-namespace Butter.Windows;
+namespace Butter;
 
 public class FlutterWindow : IDisposable
 {

@@ -1,5 +1,5 @@
-using Butter.Windows;
 using System.Threading.Channels;
+using Butter;
 
 namespace Butter.Example;
 

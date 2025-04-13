@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Butter.Windows;
+namespace Butter;
 
 public interface FlutterMessageCodec<T> {
   byte[] EncodeMessage(T message);

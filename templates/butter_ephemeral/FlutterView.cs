@@ -1,6 +1,6 @@
-using Butter.Windows.Bindings;
+using Butter.Bindings;
 
-namespace Butter.Windows;
+namespace Butter;
 
 public class FlutterView
 {

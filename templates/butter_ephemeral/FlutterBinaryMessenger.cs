@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
-using Butter.Windows.Bindings;
+using Butter.Bindings;
 
-namespace Butter.Windows;
+namespace Butter;
 
 public delegate Task<byte[]> BinaryMessageHandler(byte[] message);
 

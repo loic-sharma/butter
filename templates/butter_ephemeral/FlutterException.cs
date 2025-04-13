@@ -1,4 +1,4 @@
-namespace Butter.Windows;
+namespace Butter;
 
 public class FlutterException : Exception
 {

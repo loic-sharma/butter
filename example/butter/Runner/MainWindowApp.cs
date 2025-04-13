@@ -1,6 +1,6 @@
 ﻿using Windows.Win32;
 
-namespace Butter.Windows;
+namespace Butter;
 
 public class MainWindowAppBuilder
 {
