@@ -121,8 +121,8 @@ Depfile _unpackButterArtifacts(
   for (final String source in _kButterSources) {
     final String artifactPath = fs.path.join(
       butterRootPath,
-      'templates',
-      'butter_ephemeral',
+      'dotnet',
+      'Butter',
       source,
     );
     final String outputPath = fs.path.join(
@@ -151,7 +151,6 @@ Depfile _unpackButterArtifacts(
     icuDataFile.basename,
   );
   _unpackArtifact(fs, icuDataPath, icuDataOutputPath, inputs, outputs);
-
 
   return Depfile(inputs, outputs);
 }
