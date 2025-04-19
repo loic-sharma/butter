@@ -50,7 +50,7 @@ public class FlutterStandardCodecTest
   }
 
   [Fact]
-  public void ReadListOfFloat64()
+  public void DecodeListOfFloat64()
   {
     // List of doubles:
     // [1, 2, 3]
@@ -67,7 +67,7 @@ public class FlutterStandardCodecTest
   }
 
   [Fact]
-  public void ReadMapOfStringToBool()
+  public void DecodeMapOfStringToBool()
   {
     // Map of string to bools:
     // { "a": true, "b": false }
