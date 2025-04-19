@@ -50,8 +50,6 @@ public class FlutterMessageCodecsTest
       Assert.False(reader.Read());
     }
 
-
-
     [Fact]
     public void ReadString()
     {
@@ -74,7 +72,7 @@ public class FlutterMessageCodecsTest
       var buffer = new byte[] { 12, 3, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 240, 63, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
       var reader = new StandardCodecReader(buffer);
-      
+
       Assert.True(reader.Read());
       Assert.Equal(StandardCodecType.List, reader.CurrentType);
       Assert.Equal(3, reader.GetSize());
@@ -88,7 +86,8 @@ public class FlutterMessageCodecsTest
       Assert.True(reader.Read());
       Assert.Equal(3, reader.GetFloat64());
 
-      Assert.False(reader.Read());
+      // Ignore padding bytes.
+      while (reader.Read()) Assert.Equal(StandardCodecType.Null, reader.CurrentType);
     }
 
     [Fact]
@@ -119,5 +118,4 @@ public class FlutterMessageCodecsTest
       Assert.False(reader.Read());
     }
   }
-
 }

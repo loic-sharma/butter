@@ -48,7 +48,10 @@ public ref struct StandardCodecReader
 {
   private readonly ReadOnlySpan<byte> _buffer;
 
+  // The current position in the buffer.
   private int _position = 0;
+
+  // If the current type is a list or map, the number of items.
   private int? _size = 0;
 
   public StandardCodecReader(ReadOnlySpan<byte> buffer)
@@ -111,8 +114,8 @@ public ref struct StandardCodecReader
         var itemSize = CurrentType switch
         {
           StandardCodecType.UInt8List => 1,
-          StandardCodecType.Int32List | StandardCodecType.Float32List => 2,
-          StandardCodecType.Int64List | StandardCodecType.Float64List => 4,
+          StandardCodecType.Int32List | StandardCodecType.Float32List => 4,
+          StandardCodecType.Int64List | StandardCodecType.Float64List => 8,
           _ => throw new UnreachableException(),
         };
 
@@ -172,19 +175,19 @@ public ref struct StandardCodecReader
   public int GetInt32()
   {
     _VerifyType(StandardCodecType.Int32);
-    return BinaryPrimitives.ReadInt32BigEndian(ValueSpan);
+    return BinaryPrimitives.ReadInt32LittleEndian(ValueSpan);
   }
 
   public long GetInt64()
   {
     _VerifyType(StandardCodecType.Int64);
-    return BinaryPrimitives.ReadInt64BigEndian(ValueSpan);
+    return BinaryPrimitives.ReadInt64LittleEndian(ValueSpan);
   }
 
   public double GetFloat64()
   {
     _VerifyType(StandardCodecType.Float64);
-    return BinaryPrimitives.ReadDoubleBigEndian(ValueSpan);
+    return BinaryPrimitives.ReadDoubleLittleEndian(ValueSpan);
   }
 
   public string GetString()
@@ -203,13 +206,13 @@ public ref struct StandardCodecReader
   public float GetFloat32ListValue(int index)
   {
     _VerifyType(StandardCodecType.Float32List);
-    return BinaryPrimitives.ReadSingleBigEndian(ValueSpan.Slice(index * 4));
+    return BinaryPrimitives.ReadSingleLittleEndian(ValueSpan.Slice(index * 4));
   }
 
   public double GetFloat64ListValue(int index)
   {
     _VerifyType(StandardCodecType.Float64List);
-    return BinaryPrimitives.ReadDoubleBigEndian(ValueSpan.Slice(index * 8));
+    return BinaryPrimitives.ReadDoubleLittleEndian(ValueSpan.Slice(index * 8));
   }
 
   private void _ReadAlignment(int alignment)
@@ -233,12 +236,12 @@ public ref struct StandardCodecReader
     else if (sizeFirstByte == 254)
     {
       _position += 2;
-      return BinaryPrimitives.ReadUInt16BigEndian(sizeSpan);
+      return BinaryPrimitives.ReadUInt16LittleEndian(sizeSpan);
     }
     else
     {
       _position += 4;
-      return BinaryPrimitives.ReadInt32BigEndian(sizeSpan);
+      return BinaryPrimitives.ReadInt32LittleEndian(sizeSpan);
     }
   }
 
