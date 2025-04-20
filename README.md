@@ -7,7 +7,7 @@
 Run the example app using the Butter tool:
 
 ```
-cp example
+cd example
 dart run ../bin/butter.dart run -d butter
 ```
 
