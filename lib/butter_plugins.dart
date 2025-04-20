@@ -199,16 +199,33 @@ Future<void> writeButterPluginFiles(
 ) async {
   final ButterProject butterProject = ButterProject.fromFlutter(project);
 
-  _writeGeneratedPluginRegistrant(butterProject, plugins);
+  await _writeGeneratedPluginRegistrant(butterProject, plugins);
   _createPluginSymlinks(butterProject, plugins, force: true);
 }
 
-void _writeGeneratedPluginRegistrant(
+Future<void> _writeGeneratedPluginRegistrant(
   ButterProject project,
   List<ButterPlugin> plugins,
-) {
-  final StringBuffer buffer = StringBuffer();
-  buffer.write('''
+) async {
+  final List<ButterPlugin> methodChannelPlugins =
+      _filterMethodChannelPlugins(plugins);
+  final List<ButterPlugin> ffiPlugins = _filterFfiPlugins(plugins)
+    ..removeWhere(methodChannelPlugins.contains);
+
+  final List<Map<String, dynamic>> methodChannelPluginsMap =
+      methodChannelPlugins
+          .map((ButterPlugin plugin) => plugin.toMap())
+          .toList();
+  final List<Map<String, dynamic>> ffiPluginsMap =
+      ffiPlugins.map((ButterPlugin plugin) => plugin.toMap()).toList();
+
+  final Map<String, dynamic> templateContext = <String, dynamic>{
+    'methodChannelPlugins': methodChannelPluginsMap,
+    'ffiPlugins': ffiPluginsMap,
+    'pluginsDir': project.pluginSymlinkDirectory.path,
+  };
+
+  const String templateContent = '''
 //
 // Generated file. Do not edit.
 //
@@ -218,11 +235,47 @@ public class GeneratedPluginRegistrant
 {
   public static void RegisterPlugins(Engine engine)
   {
+{{#methodChannelPlugins}}
+    // {{name}}
+{{/methodChannelPlugins}}
   }
 }
-''');
+''';
 
-  project.generatedPluginRegistrantFile.writeAsStringSync(buffer.toString(), flush: true);
+  await _renderTemplateToFile(
+    templateContent,
+    templateContext,
+    project.generatedPluginRegistrantFile,
+    globals.templateRenderer,
+  );
+}
+
+/// Filters out any plugins that don't use method channels, and thus shouldn't be added to the native generated registrants.
+List<ButterPlugin> _filterMethodChannelPlugins(List<ButterPlugin> plugins) {
+  return plugins.where((ButterPlugin plugin) {
+    return (plugin as NativeOrDartPlugin).hasMethodChannel();
+  }).toList();
+}
+
+/// Filters out Dart-only and method channel plugins.
+///
+/// FFI plugins do not need native code registration, but their binaries need to be bundled.
+List<ButterPlugin> _filterFfiPlugins(List<ButterPlugin> plugins) {
+  return plugins.where((ButterPlugin plugin) {
+    final NativeOrDartPlugin plugin_ = plugin as NativeOrDartPlugin;
+    return plugin_.hasFfi();
+  }).toList();
+}
+
+Future<void> _renderTemplateToFile(
+  String template,
+  Object? context,
+  File file,
+  TemplateRenderer templateRenderer,
+) async {
+  final String renderedTemplate = templateRenderer.renderString(template, context);
+  await file.create(recursive: true);
+  await file.writeAsString(renderedTemplate);
 }
 
 /// Creates [symlinkDirectory] containing symlinks to each plugin listed in [platformPlugins].
