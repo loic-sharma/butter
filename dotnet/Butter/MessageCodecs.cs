@@ -23,10 +23,9 @@ public class StandardMessageCodec : MessageCodec<EncodableValue>
 
   public byte[] EncodeMessage(EncodableValue message)
   {
-    throw new NotImplementedException();
-    // var writer = new StandardCodecWriter();
-    // writer.Write(message);
-    // return writer.GetBuffer();
+    var writer = new StandardCodecWriter();
+    writer.WriteValue(message);
+    return writer.Buffer.ToArray();
   }
 
   public EncodableValue DecodeMessage(byte[] message)
@@ -43,10 +42,10 @@ public class StandardMethodCodec : MessageCodec<MethodCall>
 
   public byte[] EncodeMessage(MethodCall message)
   {
-    throw new NotImplementedException();
-    // var writer = new StandardCodecWriter();
-    // writer.Write(message);
-    // return writer.GetBuffer();
+    var writer = new StandardCodecWriter();
+    writer.WriteString(message.Name);
+    writer.WriteValue(message.Arguments);
+    return writer.Buffer.ToArray();
   }
 
   public MethodCall DecodeMessage(byte[] message)
