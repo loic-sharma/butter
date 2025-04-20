@@ -16,15 +16,8 @@ dart run ../bin/butter.dart run -d butter
 Initial:
 1. Clean should remove obj/bin/ephemeral folders
 1. Plugins
-    1. Messaging
-        1. Encodable value
-        1. Standard method codec
-        1. Standard codec
-        1. Method call / result
     1. Plugin template
     1. Plugin registration
-    1. Messaging
-        1. Standard message codec
     1. Dart plugins
     1. C++ plugins
 1. Update README
@@ -51,6 +44,7 @@ After:
     1. Win32
     1. WPF
     1. WinForms
+1. More messaging codecs like JSON
 1. Pigeon
 1. Tests
     1. Integration tests
