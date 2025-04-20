@@ -2,15 +2,15 @@ namespace Butter;
 
 public delegate Task<T> MessageHandler<T>(T message);
 
-public class FlutterBasicMessageChannel<T> {
+public class BasicMessageChannel<T> {
   private readonly string _name;
-  private readonly FlutterBinaryMessenger _messenger;
-  private readonly FlutterMessageCodec<T> _codec;
+  private readonly BinaryMessenger _messenger;
+  private readonly MessageCodec<T> _codec;
 
-  public FlutterBasicMessageChannel(
+  public BasicMessageChannel(
     string name,
-    FlutterBinaryMessenger messenger,
-    FlutterMessageCodec<T> codec) {
+    BinaryMessenger messenger,
+    MessageCodec<T> codec) {
     _name = name;
     _messenger = messenger;
     _codec = codec;

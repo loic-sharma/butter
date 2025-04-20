@@ -4,69 +4,6 @@ using System.Text;
 
 namespace Butter;
 
-public interface FlutterMessageCodec<T>
-{
-  byte[] EncodeMessage(T message);
-  T DecodeMessage(byte[] message);
-}
-
-public class FlutterStringCodec : FlutterMessageCodec<string>
-{
-  public static readonly FlutterStringCodec Instance = new FlutterStringCodec();
-
-  public byte[] EncodeMessage(string message) => Encoding.UTF8.GetBytes(message);
-
-  public string DecodeMessage(byte[] message) => Encoding.UTF8.GetString(message);
-}
-
-public class FlutterStandardCodec : FlutterMessageCodec<EncodableValue>
-{
-  public static readonly FlutterStandardCodec Instance = new FlutterStandardCodec();
-
-  public byte[] EncodeMessage(EncodableValue message)
-  {
-    throw new NotImplementedException();
-    // var writer = new StandardCodecWriter();
-    // writer.Write(message);
-    // return writer.GetBuffer();
-  }
-
-  public EncodableValue DecodeMessage(byte[] message)
-  {
-    var reader = new StandardCodecReader(message);
-
-    return reader.ReadValue();
-  }
-}
-
-public class FlutterStandardMethodCodec : FlutterMessageCodec<FlutterMethodCall>
-{
-  public static readonly FlutterStandardMethodCodec Instance = new FlutterStandardMethodCodec();
-
-  public byte[] EncodeMessage(FlutterMethodCall message)
-  {
-    throw new NotImplementedException();
-    // var writer = new StandardCodecWriter();
-    // writer.Write(message);
-    // return writer.GetBuffer();
-  }
-
-  public FlutterMethodCall DecodeMessage(byte[] message)
-  {
-    var reader = new StandardCodecReader(message);
-
-    if (!reader.Read())
-    {
-      throw new InvalidOperationException("No more data to read.");
-    }
-
-    var method = reader.GetString();
-    var arguments = reader.ReadValue();
-
-    return new FlutterMethodCall(method, arguments);
-  }
-}
-
 public enum StandardCodecType
 {
   Null = 0,
@@ -309,8 +246,6 @@ public ref struct StandardCodecReader
     }
   }
 }
-
-public record FlutterMethodCall(string Name, EncodableValue Arguments);
 
 public static class ReadEncodableValueExtensions
 {

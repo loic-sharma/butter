@@ -2,7 +2,7 @@
 
 namespace Butter;
 
-public class FlutterEngineOptions
+public class EngineOptions
 {
   public string? AssetsPath { get; init; }
 
@@ -15,18 +15,18 @@ public class FlutterEngineOptions
   public string[]? DartArgs { get; init; }
 }
 
-public class FlutterEngine : IDisposable
+public class Engine : IDisposable
 {
   private readonly EngineHandle _handle;
-  private readonly FlutterBinaryMessenger _messenger;
+  private readonly BinaryMessenger _messenger;
 
-  internal FlutterEngine(EngineHandle handle, FlutterBinaryMessenger messenger)
+  internal Engine(EngineHandle handle, BinaryMessenger messenger)
   {
     _handle = handle;
     _messenger = messenger;
   }
 
-  public static FlutterEngine Create(FlutterEngineOptions options)
+  public static Engine Create(EngineOptions options)
   {
     var properties = new FlutterDesktopEngineProperties
     {
@@ -42,17 +42,17 @@ public class FlutterEngine : IDisposable
     var handle = Flutter.FlutterDesktopEngineCreate(properties);
     if (handle.IsInvalid)
     {
-      throw new FlutterException("Failed to create FlutterEngine");
+      throw new ButterException("Failed to create FlutterEngine");
     }
 
     var messengerHandle = Flutter.FlutterDesktopEngineGetMessenger(handle);
-    var messenger = new FlutterBinaryMessenger(messengerHandle);
+    var messenger = new BinaryMessenger(messengerHandle);
 
-    return new FlutterEngine(handle, messenger);
+    return new Engine(handle, messenger);
   }
 
   internal EngineHandle Handle => _handle;
-  public FlutterBinaryMessenger Messenger =>_messenger;
+  public BinaryMessenger Messenger =>_messenger;
 
   public bool Run() => Flutter.FlutterDesktopEngineRun(_handle, entryPoint: null);
 

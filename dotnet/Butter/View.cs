@@ -2,11 +2,12 @@ using Butter.Bindings;
 
 namespace Butter;
 
-public class FlutterView
+public class View
 {
+  // Weak reference. Does not need to be disposed.
   private readonly ViewHandle _handle;
 
-  internal FlutterView(ViewHandle handle, IntPtr hwnd)
+  internal View(ViewHandle handle, IntPtr hwnd)
   {
     _handle = handle;
     Hwnd = hwnd;

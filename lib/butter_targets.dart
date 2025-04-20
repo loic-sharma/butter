@@ -76,13 +76,14 @@ const List<String> _kWindowsArtifacts = <String>[
 ];
 const List<String> _kButterSources = <String>[
   'Bindings.cs',
-  'FlutterBasicMessageChannel.cs',
-  'FlutterBinaryMessenger.cs',
-  'FlutterEngine.cs',
-  'FlutterException.cs',
-  'FlutterMessageCodecs.cs',
-  'FlutterView.cs',
-  'FlutterViewController.cs',
+  'BasicMessageChannel.cs',
+  'BinaryMessenger.cs',
+  'Engine.cs',
+  'Exception.cs',
+  'MessageCodecs.cs',
+  'StandardCodec.cs',
+  'View.cs',
+  'ViewController.cs',
   'GeneratedProject.proj',
 ];
 Depfile _unpackButterArtifacts(

@@ -2,25 +2,25 @@ using Butter.Bindings;
 
 namespace Butter;
 
-public class FlutterViewController : IDisposable
+public class ViewController : IDisposable
 {
   private readonly ViewControllerHandle _handle;
 
-  internal FlutterViewController(
+  internal ViewController(
     ViewControllerHandle handle,
-    FlutterEngine engine,
-    FlutterView view)
+    Engine engine,
+    View view)
   {
     _handle = handle;
     Engine = engine;
     View = view;
   }
 
-  public FlutterEngine Engine { get; private set; }
-  public FlutterView View { get; private set; }
+  public Engine Engine { get; private set; }
+  public View View { get; private set; }
 
-  public static FlutterViewController Create(
-    FlutterEngine engine,
+  public static ViewController Create(
+    Engine engine,
     int width,
     int height)
   {
@@ -28,14 +28,14 @@ public class FlutterViewController : IDisposable
     var handle = Flutter.FlutterDesktopViewControllerCreate(width, height, engineHandle);
     if (handle.IsInvalid)
     {
-      throw new FlutterException("Failed to create FlutterViewController");
+      throw new ButterException("Failed to create FlutterViewController");
     }
 
     var viewHandle = Flutter.FlutterDesktopViewControllerGetView(handle);
     var hwnd = Flutter.FlutterDesktopViewGetHWND(viewHandle);
-    var view = new FlutterView(viewHandle, hwnd);
+    var view = new View(viewHandle, hwnd);
 
-    return new FlutterViewController(handle, engine, view);
+    return new ViewController(handle, engine, view);
   }
 
   public bool TryHandleTopLevelWindowProc(

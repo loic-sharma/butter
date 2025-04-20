@@ -5,11 +5,11 @@ namespace Butter;
 
 public delegate Task<byte[]> BinaryMessageHandler(byte[] message);
 
-public class FlutterBinaryMessenger {
+public class BinaryMessenger {
   private readonly MessengerHandle _handle;
   private readonly Dictionary<string, BinaryMessageHandler> _handlers = new Dictionary<string, BinaryMessageHandler>();
 
-  internal FlutterBinaryMessenger(MessengerHandle handle) {
+  internal BinaryMessenger(MessengerHandle handle) {
     _handle = handle;
   }
 
