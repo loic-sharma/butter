@@ -225,7 +225,7 @@ Future<void> _writeGeneratedPluginRegistrant(
     'pluginsDir': project.pluginSymlinkDirectory.path,
   };
 
-  const String templateContent = '''
+  const String pluginRegistrantTemplate = r'''
 //
 // Generated file. Do not edit.
 //
@@ -243,9 +243,28 @@ public class GeneratedPluginRegistrant
 ''';
 
   await _renderTemplateToFile(
-    templateContent,
+    pluginRegistrantTemplate,
     templateContext,
     project.generatedPluginRegistrantFile,
+    globals.templateRenderer,
+  );
+
+  const String pluginRegistrantProjTemplate = r'''
+<Project>
+
+  <ItemGroup>
+{{#methodChannelPlugins}}
+    <ProjectReference Include="{{pluginsDir}}/{{name}}//butter/{{name}}.csproj" />
+{{/methodChannelPlugins}}
+  </ItemGroup>
+
+</Project>
+''';
+
+  await _renderTemplateToFile(
+    pluginRegistrantProjTemplate,
+    templateContext,
+    project.generatedPluginRegistrantProjFile,
     globals.templateRenderer,
   );
 }

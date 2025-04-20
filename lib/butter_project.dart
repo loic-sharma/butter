@@ -42,5 +42,8 @@ class ButterProject extends FlutterProjectPlatform {
   Directory get pluginSymlinkDirectory => ephemeralDirectory.childDirectory('.plugin_symlinks');
 
   /// The file containing the generated plugin registrant.
+  File get generatedPluginRegistrantProjFile => ephemeralDirectory.childFile('GeneratedPluginRegistrant.proj');
+
+  /// The file containing the generated plugin registrant.
   File get generatedPluginRegistrantFile => ephemeralDirectory.childFile('GeneratedPluginRegistrant.cs');
 }
