@@ -2,13 +2,13 @@ using System.Text;
 
 namespace Butter;
 
-public interface MessageCodec<T>
+public interface IMessageCodec<T>
 {
   ReadOnlySpan<byte> EncodeMessage(T message);
   T DecodeMessage(ReadOnlySpan<byte> message);
 }
 
-public class StringCodec : MessageCodec<string>
+public class StringCodec : IMessageCodec<string>
 {
   public static readonly StringCodec Instance = new StringCodec();
 
@@ -17,7 +17,7 @@ public class StringCodec : MessageCodec<string>
   public string DecodeMessage(ReadOnlySpan<byte> message) => Encoding.UTF8.GetString(message);
 }
 
-public class StandardMessageCodec : MessageCodec<EncodableValue>
+public class StandardMessageCodec : IMessageCodec<EncodableValue>
 {
   public static readonly StandardMessageCodec Instance = new StandardMessageCodec();
 
@@ -35,33 +35,3 @@ public class StandardMessageCodec : MessageCodec<EncodableValue>
     return reader.ReadValue();
   }
 }
-
-public class StandardMethodCodec : MessageCodec<MethodCall>
-{
-  public static readonly StandardMethodCodec Instance = new StandardMethodCodec();
-
-  public ReadOnlySpan<byte> EncodeMessage(MethodCall message)
-  {
-    var writer = new StandardCodecWriter();
-    writer.WriteString(message.Name);
-    writer.WriteValue(message.Arguments);
-    return writer.Buffer;
-  }
-
-  public MethodCall DecodeMessage(ReadOnlySpan<byte> message)
-  {
-    var reader = new StandardCodecReader(message);
-
-    if (!reader.Read())
-    {
-      throw new InvalidOperationException("No more data to read.");
-    }
-
-    var method = reader.GetString();
-    var arguments = reader.ReadValue();
-
-    return new MethodCall(method, arguments);
-  }
-}
-
-public record MethodCall(string Name, EncodableValue Arguments);

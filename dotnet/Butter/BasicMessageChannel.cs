@@ -5,12 +5,12 @@ public delegate Task<T> MessageHandler<T>(T message);
 public class BasicMessageChannel<T> {
   private readonly string _name;
   private readonly BinaryMessenger _messenger;
-  private readonly MessageCodec<T> _codec;
+  private readonly IMessageCodec<T> _codec;
 
   public BasicMessageChannel(
     string name,
     BinaryMessenger messenger,
-    MessageCodec<T> codec) {
+    IMessageCodec<T> codec) {
     _name = name;
     _messenger = messenger;
     _codec = codec;
@@ -22,7 +22,7 @@ public class BasicMessageChannel<T> {
   }
 
   public async Task<byte[]> SendAsync(T message) {
-    var data = _codec.EncodeMessage(message);
+    var data = _codec.EncodeMessage(message).ToArray();
     return await _messenger.SendAsync(_name, data);
   }
 
@@ -31,7 +31,7 @@ public class BasicMessageChannel<T> {
       // TODO: Handle the case where the decoder cannot decode the message.
       var decodedMessage = _codec.DecodeMessage(message);
       var response = await handler(decodedMessage);
-      return _codec.EncodeMessage(response);
+      return _codec.EncodeMessage(response).ToArray();
     });
   }
 }

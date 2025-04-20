@@ -237,6 +237,7 @@ internal static class Flutter
   public static extern uint FlutterDesktopGetDpiForMonitor(
       IntPtr monitor);
 
+  // TODO: Span and interop to avoid copying spans into byte arrays.
   [DllImport("flutter_windows")]
   public static extern bool FlutterDesktopMessengerSend(
       MessengerHandle messenger,

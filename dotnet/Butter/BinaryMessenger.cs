@@ -13,8 +13,8 @@ public class BinaryMessenger {
     _handle = handle;
   }
 
-  public void Send(string channel, byte[] message) {
-    Flutter.FlutterDesktopMessengerSend(_handle, channel, message, (IntPtr)message.Length);
+  public void Send(string channel, ReadOnlySpan<byte> message) {
+    Flutter.FlutterDesktopMessengerSend(_handle, channel, message.ToArray(), (IntPtr)message.Length);
   }
 
   public async Task<byte[]> SendAsync(string channel, byte[] message) {
