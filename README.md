@@ -32,7 +32,6 @@ Initial:
         1. Build command
         1. Create command
         1. Etc...
-1. Clean up Butter.Windows.csproj. Move stuff to ephemeral
 1. Do a pass on runner app. Make sure it supports everything Flutter Windows does.
 1. Do a pass on TODOs.
 1. Check .NET public APIs. Make stuff internal. Add comments.
