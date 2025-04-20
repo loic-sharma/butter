@@ -238,13 +238,27 @@ internal static class Flutter
     IntPtr monitor);
 
   // TODO: Span and interop to avoid copying spans into byte arrays.
+  public static unsafe bool FlutterDesktopMessengerSend(
+    MessengerHandle messenger,
+    string channel,
+    ReadOnlyMemory<byte> message)
+  {
+    var messageLength = (IntPtr)message.Length;
+    using var messageHandle = message.Pin();
+
+    return FlutterDesktopMessengerSend(
+      messenger,
+      channel,
+      (byte*)messageHandle.Pointer,
+      messageLength);
+  }
+
   [DllImport("flutter_windows")]
-  public static extern bool FlutterDesktopMessengerSend(
+  private static unsafe extern bool FlutterDesktopMessengerSend(
     MessengerHandle messenger,
     [MarshalAs(UnmanagedType.LPStr)] string channel,
-    byte[] message,
+    byte* message,
     IntPtr messageSize);
-
 
   public static unsafe void FlutterDesktopMessengerSendResponse(
     MessengerHandle messenger,
@@ -268,17 +282,43 @@ internal static class Flutter
     byte* data,
     IntPtr dataLength);
 
+  public static unsafe bool FlutterDesktopMessengerSendWithReply(
+    MessengerHandle messenger,
+    string channel,
+    ReadOnlyMemory<byte> message,
+    FlutterDesktopBinaryReply reply)
+  {
+    var messageLength = (IntPtr)message.Length;
+    using var messageHandle = message.Pin();
+
+    return FlutterDesktopMessengerSendWithReply(
+      messenger,
+      channel,
+      (byte*)messageHandle.Pointer,
+      messageLength,
+      reply,
+      IntPtr.Zero);
+  }
+
   [DllImport("flutter_windows")]
-  public static extern bool FlutterDesktopMessengerSendWithReply(
+  private static unsafe extern bool FlutterDesktopMessengerSendWithReply(
     MessengerHandle messenger,
     [MarshalAs(UnmanagedType.LPStr)] string channel,
-    byte[] message,
+    byte* message,
     IntPtr messageSize,
     FlutterDesktopBinaryReply reply,
     IntPtr userData);
 
+  public static void FlutterDesktopMessengerSetCallback(
+    MessengerHandle messenger,
+    string channel,
+    FlutterDesktopMessageCallback? callback)
+  {
+    FlutterDesktopMessengerSetCallback(messenger, channel, callback, IntPtr.Zero);
+  }
+
   [DllImport("flutter_windows")]
-  public static extern void FlutterDesktopMessengerSetCallback(
+  private static extern void FlutterDesktopMessengerSetCallback(
     MessengerHandle messenger,
     [MarshalAs(UnmanagedType.LPStr)] string channel,
     FlutterDesktopMessageCallback? callback,

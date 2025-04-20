@@ -17,8 +17,7 @@ public class BinaryMessenger {
   }
 
   public void Send(string channel, ReadOnlyMemory<byte> message) {
-    // TODO: Avoid copying the message.
-    Flutter.FlutterDesktopMessengerSend(_handle, channel, message.ToArray(), (IntPtr)message.Length);
+    Flutter.FlutterDesktopMessengerSend(_handle, channel, message);
   }
 
   public async Task<byte[]> SendAsync(string channel, ReadOnlyMemory<byte> message) {
@@ -27,16 +26,14 @@ public class BinaryMessenger {
     Flutter.FlutterDesktopMessengerSendWithReply(
       _handle,
       channel,
-      message.ToArray(),
-      (IntPtr)message.Length,
-      (data, dataSize, userData) => completer.SetResult(data),
-      IntPtr.Zero);
+      message,
+      (data, dataSize, userData) => completer.SetResult(data));
     return await completer.Task;
   }
 
   public void SetHandler(string channel, BinaryMessageHandler handler) {
     if (_handlers.ContainsKey(channel)) {
-      Flutter.FlutterDesktopMessengerSetCallback(_handle, channel, null, IntPtr.Zero);
+      Flutter.FlutterDesktopMessengerSetCallback(_handle, channel, null);
     }
 
     _handlers[channel] = handler;
@@ -45,10 +42,11 @@ public class BinaryMessenger {
       _handle,
       channel,
       async (messenger, message, userData) => {
-        // TODO: Avoid copying the message.
         // TODO: Make this thread-safe.
         // Flutter Windows locks the messenger, drops the response if the
         // messenger is not available, sends the response, then unlocks the messenger.
+
+        // TODO: Avoid copying the message.
         var data = new byte[message.MessageSize.ToInt32()];
         Marshal.Copy(message.Message, data, 0, data.Length);
 
@@ -59,7 +57,6 @@ public class BinaryMessenger {
           _handle,
           message.ResponseHandle,
           responseWriter.WrittenMemory);
-      },
-      IntPtr.Zero);
+      });
   }
 }
