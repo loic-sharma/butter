@@ -237,6 +237,7 @@ internal static class Flutter
   public static extern uint FlutterDesktopGetDpiForMonitor(
       IntPtr monitor);
 
+
   // TODO: Span and interop to avoid copying spans into byte arrays.
   [DllImport("flutter_windows")]
   public static extern bool FlutterDesktopMessengerSend(
@@ -245,11 +246,27 @@ internal static class Flutter
       byte[] message,
       IntPtr messageSize);
 
+
+  public static unsafe void FlutterDesktopMessengerSendResponse(
+    MessengerHandle messenger,
+    IntPtr handle,
+    ReadOnlyMemory<byte> data)
+  {
+    var dataLength = (IntPtr)data.Length;
+    using var dataHandle = data.Pin();
+
+    FlutterDesktopMessengerSendResponse(
+      messenger,
+      handle,
+      (byte*)dataHandle.Pointer,
+      dataLength);
+  }
+
   [DllImport("flutter_windows")]
-  public static extern void FlutterDesktopMessengerSendResponse(
+  private static extern unsafe void FlutterDesktopMessengerSendResponse(
       MessengerHandle messenger,
       IntPtr handle,
-      byte[] data,
+      byte* data,
       IntPtr dataLength);
 
   [DllImport("flutter_windows")]

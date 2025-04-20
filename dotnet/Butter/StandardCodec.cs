@@ -228,19 +228,26 @@ public ref struct StandardCodecReader
   }
 }
 
-public class StandardCodecWriter
+public ref struct StandardCodecWriter
 {
   private const int MaxSizeBytes = 5;
 
-  private readonly ArrayBufferWriter<byte> _buffer = new();
+  private readonly IBufferWriter<byte> _buffer;
 
-  public ReadOnlySpan<byte> Buffer => _buffer.WrittenSpan;
+  // The number of bytes written to the buffer.
+  private int _writtenBytes = 0;
+
+  public StandardCodecWriter(IBufferWriter<byte> buffer)
+  {
+    _buffer = buffer;
+  }
 
   public void WriteNull()
   {
     var span = _buffer.GetSpan(1);
     span[0] = (byte)StandardCodecType.Null;
     _buffer.Advance(1);
+    _writtenBytes += 1;
   }
 
   public void WriteBool(bool value)
@@ -248,6 +255,7 @@ public class StandardCodecWriter
     var span = _buffer.GetSpan(1);
     span[0] = (byte)(value ? StandardCodecType.True : StandardCodecType.False);
     _buffer.Advance(1);
+    _writtenBytes += 1;
   }
 
   public void WriteInt32(int value)
@@ -256,6 +264,7 @@ public class StandardCodecWriter
     span[0] = (byte)StandardCodecType.Int32;
     BinaryPrimitives.WriteInt32LittleEndian(span.Slice(1, 4), value);
     _buffer.Advance(5);
+    _writtenBytes += 5;
   }
 
   public void WriteInt64(long value)
@@ -264,6 +273,7 @@ public class StandardCodecWriter
     span[0] = (byte)StandardCodecType.Int64;
     BinaryPrimitives.WriteInt64LittleEndian(span.Slice(1, 8), value);
     _buffer.Advance(9);
+    _writtenBytes += 9;
   }
 
   public void WriteFloat64(double value)
@@ -275,12 +285,13 @@ public class StandardCodecWriter
     span[0] = (byte)StandardCodecType.Float64;
     bytesWritten += 1;
 
-    bytesWritten += WriteAlignment(span.Slice(bytesWritten), bytesWritten, 8);
+    bytesWritten += WriteAlignment(span.Slice(bytesWritten), _writtenBytes + bytesWritten, 8);
 
     BinaryPrimitives.WriteDoubleLittleEndian(span.Slice(bytesWritten, 8), value);
     bytesWritten += 8;
 
     _buffer.Advance(bytesWritten);
+    _writtenBytes += bytesWritten;
   }
 
   public void WriteString(string value) => WriteString(value.AsSpan());
@@ -300,6 +311,7 @@ public class StandardCodecWriter
     bytesWritten += Encoding.UTF8.GetBytes(value, span.Slice(bytesWritten));
 
     _buffer.Advance(bytesWritten);
+    _writtenBytes += bytesWritten;
   }
 
   public void WriteUInt8List(ReadOnlySpan<byte> value) => WriteTypedList(StandardCodecType.UInt8List, value);
@@ -322,13 +334,14 @@ public class StandardCodecWriter
 
     // Write the size of the list and the alignment bytes.
     bytesWritten += WriteSize(span.Slice(bytesWritten), value.Length);
-    bytesWritten += WriteAlignment(span.Slice(bytesWritten), bytesWritten, itemSize);
+    bytesWritten += WriteAlignment(span.Slice(bytesWritten), _writtenBytes + bytesWritten, itemSize);
 
     // Write the value bytes.
     MemoryMarshal.AsBytes(value).CopyTo(span.Slice(bytesWritten));
     bytesWritten += valueBytes;
 
     _buffer.Advance(bytesWritten);
+    _writtenBytes += bytesWritten;
   }
 
   public void WriteListStart(int size)
@@ -337,6 +350,7 @@ public class StandardCodecWriter
     span[0] = (byte)StandardCodecType.List;
     var sizeBytes = WriteSize(span.Slice(1), size);
     _buffer.Advance(1 + sizeBytes);
+    _writtenBytes += 1 + sizeBytes;
   }
 
   public void WriteMapStart(int size)
@@ -345,9 +359,10 @@ public class StandardCodecWriter
     span[0] = (byte)StandardCodecType.Map;
     var sizeBytes = WriteSize(span.Slice(1), size);
     _buffer.Advance(1 + sizeBytes);
+    _writtenBytes += 1 + sizeBytes;
   }
 
-  private int WriteSize(Span<byte> span, int size)
+  private static int WriteSize(Span<byte> span, int size)
   {
     Debug.Assert(size >= 0, "Size must be non-negative.");
     Debug.Assert(span.Length >= MaxSizeBytes, $"Span must be at least ${MaxSizeBytes} bytes long.");
@@ -371,7 +386,7 @@ public class StandardCodecWriter
     }
   }
 
-  private int WriteAlignment(Span<byte> span, int unflushed, int alignment)
+  private static int WriteAlignment(Span<byte> span, int bytesWritten, int alignment)
   {
     Debug.Assert(span.Length >= alignment - 1, $"Span must be at least {alignment} bytes long.");
 
@@ -380,7 +395,7 @@ public class StandardCodecWriter
       return 0;
     }
 
-    var mod = (_buffer.WrittenCount + unflushed) % alignment;
+    var mod = bytesWritten % alignment;
     if (mod == 0)
     {
       return 0;

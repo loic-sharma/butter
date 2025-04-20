@@ -1,6 +1,3 @@
-using System.Threading.Channels;
-using Butter;
-
 namespace Butter.Example;
 
 public class Program
@@ -16,17 +13,17 @@ public class Program
   }
 
   // TODO: Remove this.
-  //private static void AddMessageChannel(MainWindowApp app)
-  //{
-  //  var channel = new BasicMessageChannel<string>(
-  //    "test.example.butter",
-  //    app.Engine.Messenger,
-  //    StringCodec.Instance);
+  // private static void AddMessageChannel(MainWindowApp app)
+  // {
+  //   var channel = new BasicMessageChannel<string>(
+  //     "test.example.butter",
+  //     app.Engine.Messenger,
+  //     StringCodec.Instance);
 
-  //  channel.SetMessageHandler((message) =>
-  //  {
-  //    Console.WriteLine($"Received '{message}'");
-  //    return Task.FromResult("Hello friend!");
-  //  });
-  //}
+  //   channel.SetMessageHandler((message) =>
+  //   {
+  //     Console.WriteLine($"Received '{message}'");
+  //     return Task.FromResult("Hello friend!");
+  //   });
+  // }
 }

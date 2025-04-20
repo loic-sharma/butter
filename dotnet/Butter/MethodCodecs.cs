@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Security;
 
 namespace Butter;
@@ -17,10 +18,13 @@ public class StandardMethodCodec : IMethodCodec
 
   public ReadOnlySpan<byte> EncodeMethodCall(MethodCall message)
   {
-    var writer = new StandardCodecWriter();
+    var buffer = new ArrayBufferWriter<byte>();
+    var writer = new StandardCodecWriter(buffer);
+
     writer.WriteString(message.Name);
     writer.WriteValue(message.Arguments);
-    return writer.Buffer;
+
+    return buffer.WrittenSpan;
   }
 
   public MethodCall DecodeMethodCall(ReadOnlySpan<byte> message)

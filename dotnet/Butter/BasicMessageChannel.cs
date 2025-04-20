@@ -1,3 +1,5 @@
+using System.Buffers;
+
 namespace Butter;
 
 public delegate Task<T> MessageHandler<T>(T message);
@@ -17,21 +19,26 @@ public class BasicMessageChannel<T> {
   }
 
   public void Send(T message) {
-    var data = _codec.EncodeMessage(message);
-    _messenger.Send(_name, data);
+    var writer = new ArrayBufferWriter<byte>();
+
+    _codec.EncodeMessage(writer, message);
+    _messenger.Send(_name, writer.WrittenMemory);
   }
 
   public async Task<byte[]> SendAsync(T message) {
-    var data = _codec.EncodeMessage(message).ToArray();
-    return await _messenger.SendAsync(_name, data);
+    var writer = new ArrayBufferWriter<byte>();
+    _codec.EncodeMessage(writer, message);
+
+    return await _messenger.SendAsync(_name, writer.WrittenMemory);
   }
 
   public void SetMessageHandler(MessageHandler<T> handler) {
-    _messenger.SetHandler(_name, async (message) => {
+    _messenger.SetHandler(_name, async (message, responseWriter) => {
       // TODO: Handle the case where the decoder cannot decode the message.
-      var decodedMessage = _codec.DecodeMessage(message);
+      var decodedMessage = _codec.DecodeMessage(message.Span);
       var response = await handler(decodedMessage);
-      return _codec.EncodeMessage(response).ToArray();
+
+      _codec.EncodeMessage(responseWriter, response);
     });
   }
 }

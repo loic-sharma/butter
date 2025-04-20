@@ -1,9 +1,12 @@
+using System.Buffers;
 using System.Runtime.InteropServices;
 using Butter.Bindings;
 
 namespace Butter;
 
-public delegate Task<byte[]> BinaryMessageHandler(byte[] message);
+public delegate Task BinaryMessageHandler(
+  ReadOnlyMemory<byte> message,
+  IBufferWriter<byte> responseWriter);
 
 public class BinaryMessenger {
   private readonly MessengerHandle _handle;
@@ -13,16 +16,18 @@ public class BinaryMessenger {
     _handle = handle;
   }
 
-  public void Send(string channel, ReadOnlySpan<byte> message) {
+  public void Send(string channel, ReadOnlyMemory<byte> message) {
+    // TODO: Avoid copying the message.
     Flutter.FlutterDesktopMessengerSend(_handle, channel, message.ToArray(), (IntPtr)message.Length);
   }
 
-  public async Task<byte[]> SendAsync(string channel, byte[] message) {
+  public async Task<byte[]> SendAsync(string channel, ReadOnlyMemory<byte> message) {
+    // TODO: Avoid copying the message.
     var completer = new TaskCompletionSource<byte[]>();
     Flutter.FlutterDesktopMessengerSendWithReply(
       _handle,
       channel,
-      message,
+      message.ToArray(),
       (IntPtr)message.Length,
       (data, dataSize, userData) => completer.SetResult(data),
       IntPtr.Zero);
@@ -40,18 +45,20 @@ public class BinaryMessenger {
       _handle,
       channel,
       async (messenger, message, userData) => {
+        // TODO: Avoid copying the message.
         // TODO: Make this thread-safe.
         // Flutter Windows locks the messenger, drops the response if the
         // messenger is not available, sends the response, then unlocks the messenger.
         var data = new byte[message.MessageSize.ToInt32()];
         Marshal.Copy(message.Message, data, 0, data.Length);
-        var response = await handler(data);
+
+        var responseWriter = new ArrayBufferWriter<byte>();
+        await handler(data, responseWriter);
 
         Flutter.FlutterDesktopMessengerSendResponse(
           _handle,
           message.ResponseHandle,
-          response,
-          (IntPtr)response.Length);
+          responseWriter.WrittenMemory);
       },
       IntPtr.Zero);
   }

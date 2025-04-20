@@ -1,3 +1,5 @@
+using System.Buffers;
+
 namespace Butter.Tests;
 
 public class StandardCodecReaderTest
@@ -138,11 +140,12 @@ public class StandardCodecWriterTest
   [Fact]
   public void WriteNull()
   {
-    var writer = new StandardCodecWriter();
+    var buffer = new ArrayBufferWriter<byte>();
+    var writer = new StandardCodecWriter(buffer);
 
     writer.WriteNull();
 
-    var reader = new StandardCodecReader(writer.Buffer);
+    var reader = new StandardCodecReader(buffer.WrittenSpan);
 
     Assert.True(reader.Read());
     Assert.Equal(StandardCodecType.Null, reader.CurrentType);
@@ -152,11 +155,12 @@ public class StandardCodecWriterTest
   [Fact]
   public void WriteTrue()
   {
-    var writer = new StandardCodecWriter();
+    var buffer = new ArrayBufferWriter<byte>();
+    var writer = new StandardCodecWriter(buffer);
 
     writer.WriteBool(true);
 
-    var reader = new StandardCodecReader(writer.Buffer);
+    var reader = new StandardCodecReader(buffer.WrittenSpan);
 
     Assert.True(reader.Read());
     Assert.Equal(StandardCodecType.True, reader.CurrentType);
@@ -166,11 +170,12 @@ public class StandardCodecWriterTest
   [Fact]
   public void WriteFalse()
   {
-    var writer = new StandardCodecWriter();
+    var buffer = new ArrayBufferWriter<byte>();
+    var writer = new StandardCodecWriter(buffer);
 
     writer.WriteBool(false);
 
-    var reader = new StandardCodecReader(writer.Buffer);
+    var reader = new StandardCodecReader(buffer.WrittenSpan);
 
     Assert.True(reader.Read());
     Assert.Equal(StandardCodecType.False, reader.CurrentType);
@@ -180,11 +185,12 @@ public class StandardCodecWriterTest
   [Fact]
   public void WriteInt32()
   {
-    var writer = new StandardCodecWriter();
+    var buffer = new ArrayBufferWriter<byte>();
+    var writer = new StandardCodecWriter(buffer);
 
     writer.WriteInt32(123);
 
-    var reader = new StandardCodecReader(writer.Buffer);
+    var reader = new StandardCodecReader(buffer.WrittenSpan);
 
     Assert.True(reader.Read());
     Assert.Equal(StandardCodecType.Int32, reader.CurrentType);
@@ -195,11 +201,12 @@ public class StandardCodecWriterTest
   [Fact]
   public void WriteInt64()
   {
-    var writer = new StandardCodecWriter();
+    var buffer = new ArrayBufferWriter<byte>();
+    var writer = new StandardCodecWriter(buffer);
 
     writer.WriteInt64(123);
 
-    var reader = new StandardCodecReader(writer.Buffer);
+    var reader = new StandardCodecReader(buffer.WrittenSpan);
 
     Assert.True(reader.Read());
     Assert.Equal(StandardCodecType.Int64, reader.CurrentType);
@@ -210,11 +217,12 @@ public class StandardCodecWriterTest
   [Fact]
   public void WriteFloat64()
   {
-    var writer = new StandardCodecWriter();
+    var buffer = new ArrayBufferWriter<byte>();
+    var writer = new StandardCodecWriter(buffer);
 
     writer.WriteFloat64(123.0f);
 
-    var reader = new StandardCodecReader(writer.Buffer);
+    var reader = new StandardCodecReader(buffer.WrittenSpan);
 
     Assert.True(reader.Read());
     Assert.Equal(StandardCodecType.Float64, reader.CurrentType);
@@ -225,11 +233,12 @@ public class StandardCodecWriterTest
   [Fact]
   public void WriteString()
   {
-    var writer = new StandardCodecWriter();
+    var buffer = new ArrayBufferWriter<byte>();
+    var writer = new StandardCodecWriter(buffer);
 
     writer.WriteString("foo");
 
-    var reader = new StandardCodecReader(writer.Buffer);
+    var reader = new StandardCodecReader(buffer.WrittenSpan);
 
     Assert.True(reader.Read());
     Assert.Equal(StandardCodecType.String, reader.CurrentType);
@@ -240,14 +249,15 @@ public class StandardCodecWriterTest
   [Fact]
   public void WriteList()
   {
-    var writer = new StandardCodecWriter();
+    var buffer = new ArrayBufferWriter<byte>();
+    var writer = new StandardCodecWriter(buffer);
 
     writer.WriteListStart(3);
     writer.WriteBool(true);
     writer.WriteInt32(1);
     writer.WriteString("foo");
 
-    var reader = new StandardCodecReader(writer.Buffer);
+    var reader = new StandardCodecReader(buffer.WrittenSpan);
 
     Assert.True(reader.Read());
     Assert.Equal(StandardCodecType.List, reader.CurrentType);
@@ -268,7 +278,8 @@ public class StandardCodecWriterTest
   [Fact]
   public void WriteMap()
   {
-    var writer = new StandardCodecWriter();
+    var buffer = new ArrayBufferWriter<byte>();
+    var writer = new StandardCodecWriter(buffer);
 
     writer.WriteMapStart(2);
     writer.WriteString("a");
@@ -276,7 +287,7 @@ public class StandardCodecWriterTest
     writer.WriteString("b");
     writer.WriteString("foo");
 
-    var reader = new StandardCodecReader(writer.Buffer);
+    var reader = new StandardCodecReader(buffer.WrittenSpan);
 
     Assert.True(reader.Read());
     Assert.Equal(StandardCodecType.Map, reader.CurrentType);
