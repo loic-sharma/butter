@@ -50,6 +50,8 @@ public class MainWindowAppBuilder
       DartArgs = _args,
     });
 
+    GeneratedPluginRegistrant.RegisterPlugins(engine);
+
     FlutterWindow.RegisterWindowClass();
     var window = FlutterWindow.Create(
       engine,

@@ -37,7 +37,8 @@ Initial:
 1. Check .NET public APIs. Make stuff internal. Add comments.
 
 After:
-1. SynchronizationContext for default win32 app
+1. SynchronizationContext for default win32 app? Provide a way to get back to the main thread?
+1. Improve build performance
 1. Doctor command
 1. Upgrade command
 1. Add-to-app

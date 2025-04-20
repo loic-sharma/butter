@@ -38,4 +38,7 @@ class ButterProject extends FlutterProjectPlatform {
 
   /// The file containing the generated configuration for the current build.
   File get generatedConfigPropsFile => ephemeralDirectory.childFile('GeneratedConfig.props');
+
+  /// The file containing the generated plugin registrant.
+  File get generatedPluginRegistrantFile => ephemeralDirectory.childFile('GeneratedPluginRegistrant.cs');
 }

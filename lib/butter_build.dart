@@ -10,6 +10,7 @@ import 'package:flutter_tools/src/cache.dart';
 import 'package:flutter_tools/src/globals.dart' as globals;
 import 'package:path/path.dart' as path;
 
+import 'butter_plugins.dart';
 import 'butter_project.dart';
 import 'butter_targets.dart';
 import 'common.dart';
@@ -69,6 +70,11 @@ Future<void> buildButter(
     'Building Butter application...',
   );
   try {
+    await injectButterPlugins(
+      project.parent,
+      releaseMode: buildInfo.isRelease,
+    );
+
     _writeGeneratedConfig(
       Cache.flutterRoot!,
       project,
