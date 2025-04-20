@@ -28,12 +28,14 @@ public class BasicMessageChannel<T>
     _messenger.Send(_name, writer.WrittenMemory);
   }
 
-  public async Task<byte[]> SendAsync(T message)
+  public async Task<ReadOnlyMemory<byte>> SendAsync(
+    T message,
+    CancellationToken token = default)
   {
     var writer = new ArrayBufferWriter<byte>();
     _codec.EncodeMessage(writer, message);
 
-    return await _messenger.SendAsync(_name, writer.WrittenMemory);
+    return await _messenger.SendAsync(_name, writer.WrittenMemory, token);
   }
 
   public void SetMessageHandler(MessageHandler<T> handler)

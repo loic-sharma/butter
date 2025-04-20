@@ -45,12 +45,12 @@ public class ViewController : IDisposable
     out nint? result)
   {
     var handled = Flutter.FlutterDesktopViewControllerHandleTopLevelWindowProc(
-        _handle,
-        View.Hwnd,
-        message,
-        wParam,
-        lParam,
-        out var value);
+      _handle,
+      View.Hwnd,
+      message,
+      wParam,
+      lParam,
+      out var value);
 
     result = handled ? value : null;
     return result != null;

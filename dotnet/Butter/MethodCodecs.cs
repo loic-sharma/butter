@@ -44,12 +44,75 @@ public class StandardMethodCodec : IMethodCodec<EncodableValue>
     IBufferWriter<byte> writer,
     MethodResult<EncodableValue> result)
   {
-    throw new NotImplementedException();
+    var codec = new StandardCodecWriter(writer);
+    switch (result.Kind)
+    {
+      case MethodResultKind.Success:
+        // Write the success tag.
+        writer.GetSpan(1)[0] = 0;
+        writer.Advance(1);
+
+        // Write the success result.
+        var success = result.AsSuccess();
+        codec.WriteValue(success.Result);
+        break;
+      case MethodResultKind.Error:
+        // Write the error tag.
+        writer.GetSpan(1)[0] = 1;
+        writer.Advance(1);
+
+        // Write the error code, message, and details.
+        var error = result.AsError();
+        codec.WriteString(error.ErrorCode);
+        if (error.ErrorMessage == null)
+        {
+          codec.WriteNull();
+        }
+        else
+        {
+          codec.WriteString(error.ErrorMessage);
+        }
+        codec.WriteValue(error.ErrorDetails);
+        break;
+      default:
+        throw new NotSupportedException($"Unsupported method result kind: {result.Kind}.");
+    }
   }
 
   public MethodResult<EncodableValue> DecodeMethodResult(ReadOnlySpan<byte> message)
   {
-    throw new NotImplementedException();
+    var tag = message[0];
+    var codec = new StandardCodecReader(message.Slice(1));
+
+    switch (tag)
+    {
+      case 0:
+        // Success result.
+        var result = codec.ReadValue();
+        return new SuccessMethodResult<EncodableValue>(result);
+      case 1:
+        // Error result.
+        if (!codec.Read()) throw new InvalidDataException("Method result is missing an error code.");
+        if (codec.CurrentType != StandardCodecType.String)
+          throw new InvalidDataException($"Method result error code is not a string: {codec.CurrentType}.");
+
+        var errorCode = codec.GetString();
+
+        if (!codec.Read()) throw new InvalidDataException("Method result is missing an error message.");
+        if (codec.CurrentType != StandardCodecType.String && codec.CurrentType != StandardCodecType.Null)
+          throw new InvalidDataException($"Method result error message is not a string: {codec.CurrentType}.");
+
+        string errorMessage = codec.CurrentType == StandardCodecType.String
+          ? codec.GetString()
+          : string.Empty;
+
+        if (!codec.Read()) throw new InvalidDataException("Method result is missing error details.");
+        var errorDetails = codec.GetValue();
+
+        return new ErrorMethodResult<EncodableValue>(errorCode, errorMessage, errorDetails);
+      default:
+        throw new NotSupportedException($"Unsupported method result tag: {tag}.");
+    }
   }
 }
 

@@ -1,5 +1,16 @@
 namespace Butter.Tests;
 
+public class EncodableValueTest
+{
+  [Fact]
+  public void Default()
+  {
+    var value = new EncodableValue();
+
+    Assert.Equal(StandardCodecType.Null, value.Type);
+  }
+}
+
 public class StandardMessageCodecTest
 {
   [Fact]

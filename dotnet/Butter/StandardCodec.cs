@@ -499,6 +499,11 @@ public static class EncodableValueExtensions
       throw new InvalidOperationException("No more data to read.");
     }
 
+    return reader.GetValue();
+  }
+
+  public static EncodableValue GetValue(this ref StandardCodecReader reader)
+  {
     return reader.CurrentType switch
     {
       StandardCodecType.Null => EncodableValue.Null,
@@ -515,6 +520,7 @@ public static class EncodableValueExtensions
       StandardCodecType.Float64List => GetFloat64ListValue(reader),
       StandardCodecType.List => ReadListValue(ref reader),
       StandardCodecType.Map => ReadMapValue(ref reader),
+      StandardCodecType.None => throw new InvalidOperationException("No data has been read yet."),
       _ => throw new NotImplementedException($"Unsupported type: {reader.CurrentType}"),
     };
   }

@@ -20,14 +20,20 @@ public class BinaryMessenger {
     Flutter.FlutterDesktopMessengerSend(_handle, channel, message);
   }
 
-  public async Task<byte[]> SendAsync(string channel, ReadOnlyMemory<byte> message) {
-    // TODO: Avoid copying the message.
-    var completer = new TaskCompletionSource<byte[]>();
+  public async Task<ReadOnlyMemory<byte>> SendAsync(
+    string channel,
+    ReadOnlyMemory<byte> message,
+    CancellationToken token = default)
+  {
+    var completer = new TaskCompletionSource<ReadOnlyMemory<byte>>();
+    using var tokenRegistration = token.Register(() => completer.TrySetCanceled());
+
     Flutter.FlutterDesktopMessengerSendWithReply(
       _handle,
       channel,
       message,
-      (data, dataSize, userData) => completer.SetResult(data));
+      (data, dataSize, userData) => completer.TrySetResult(data));
+
     return await completer.Task;
   }
 
