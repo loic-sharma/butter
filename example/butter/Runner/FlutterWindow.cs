@@ -5,7 +5,7 @@ using Windows.Win32.Graphics.Dwm;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
 
-namespace Butter;
+namespace Butter.Example;
 
 public class FlutterWindow : IDisposable
 {
@@ -14,7 +14,7 @@ public class FlutterWindow : IDisposable
   private static bool ClassRegistered = false;
   private static readonly Dictionary<HWND, FlutterWindow> Windows = new();
 
-  private readonly FlutterViewController _controller;
+  private readonly ViewController _controller;
 
   public static void RegisterWindowClass()
   {
@@ -26,7 +26,7 @@ public class FlutterWindow : IDisposable
   }
 
   // TODO: This is not thread safe as it mutates a global.
-  public static FlutterWindow Create(FlutterEngine engine, string title, Frame frame)
+  public static FlutterWindow Create(Engine engine, string title, Frame frame)
   {
     // Create the top-level "host" window for the application.
     var host = Window.Create(
@@ -35,7 +35,7 @@ public class FlutterWindow : IDisposable
       frame);
 
     // Create the view and attach it to the host.
-    var controller = FlutterViewController.Create(
+    var controller = ViewController.Create(
       engine,
       frame.Width,
       frame.Height);
@@ -59,7 +59,7 @@ public class FlutterWindow : IDisposable
     return window;
   }
 
-  private FlutterWindow(HWND hwnd, FlutterViewController controller)
+  private FlutterWindow(HWND hwnd, ViewController controller)
   {
     Hwnd = hwnd;
     _controller = controller;
@@ -193,7 +193,7 @@ internal static class Window
 
     if (hwnd.IsNull)
     {
-      throw new FlutterException("Failed to create the window");
+      throw new ButterException("Failed to create the window");
     }
 
     UpdateTheme(hwnd);

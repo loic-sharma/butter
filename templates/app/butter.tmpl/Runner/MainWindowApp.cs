@@ -1,6 +1,7 @@
 ﻿using Windows.Win32;
 
-namespace Butter;
+// TODO: Change namespace to match the project name.
+namespace Butter.Example;
 
 public class MainWindowAppBuilder
 {
@@ -42,7 +43,7 @@ public class MainWindowAppBuilder
 
   public MainWindowApp Build()
   {
-    var engine = FlutterEngine.Create(new FlutterEngineOptions
+    var engine = Engine.Create(new EngineOptions
     {
       AotLibraryPath = Path.Join("data", "app.so"),
       IcuDataPath = Path.Join("data", "icudtl.dat"),
@@ -74,13 +75,13 @@ public class MainWindowApp : IDisposable
     return CreateBuilder(args).Build();
   }
 
-  internal MainWindowApp(FlutterEngine engine, FlutterWindow window)
+  internal MainWindowApp(Engine engine, FlutterWindow window)
   {
     Engine = engine;
     MainWindow = window;
   }
 
-  public FlutterEngine Engine { get; }
+  public Engine Engine { get; }
   public FlutterWindow MainWindow { get; }
 
   public void Run()
@@ -92,7 +93,8 @@ public class MainWindowApp : IDisposable
     }
   }
 
-  public void Dispose() {
+  public void Dispose()
+  {
     Dispose(true);
     GC.SuppressFinalize(this);
   }

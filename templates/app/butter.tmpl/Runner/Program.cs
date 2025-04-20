@@ -1,5 +1,6 @@
 using Butter;
 
+// TODO: Change namespace to match the project name.
 namespace Butter.Example;
 
 public class Program
