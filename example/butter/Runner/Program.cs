@@ -13,17 +13,44 @@ public class Program
   }
 
   // TODO: Remove this.
-  // private static void AddMessageChannel(MainWindowApp app)
+  // private static void AddStringMessageChannel(MainWindowApp app)
   // {
   //   var channel = new BasicMessageChannel<string>(
-  //     "test.example.butter",
+  //     "butter.string_message_channel",
   //     app.Engine.Messenger,
   //     StringCodec.Instance);
 
+  //   // Respond to messages sent from Dart.
   //   channel.SetMessageHandler((message) =>
   //   {
-  //     Console.WriteLine($"Received '{message}'");
-  //     return Task.FromResult("Hello friend!");
+  //     Console.WriteLine($"C# received message '{message}'");
+  //     return Task.FromResult("Responding from C#!");
+  //   });
+  // }
+
+  // TODO: Remove this.
+  // private static void AddMethodChannel(MainWindowApp app)
+  // {
+  //   var channel = new MethodChannel<EncodableValue>(
+  //     "butter.method_channel",
+  //     app.Engine.Messenger,
+  //     StandardMethodCodec.Instance);
+
+  //   // Respond to messages sent from Dart.
+  //   channel.SetMethodCallHandler((call) =>
+  //   {
+  //     switch (call.Name)
+  //     {
+  //       case "sendMessage":
+  //         Console.WriteLine($"C# received message '{call.Arguments}'");
+  //         return Task.FromResult<MethodResult<EncodableValue>>(
+  //           new SuccessMethodResult<EncodableValue>(
+  //             new EncodableValue("Responding from C#!")));
+
+  //       default:
+  //         return Task.FromResult<MethodResult<EncodableValue>>(
+  //           new ErrorMethodResult<EncodableValue>("UnknownMethod"));
+  //     }
   //   });
   // }
 }

@@ -2,7 +2,7 @@ using System.Buffers;
 
 namespace Butter;
 
-interface IMethodCodec<T>
+public interface IMethodCodec<T>
 {
   MethodCall<T> DecodeMethodCall(ReadOnlySpan<byte> message);
   MethodResult<T> DecodeMethodResult(ReadOnlySpan<byte> message);
@@ -128,8 +128,8 @@ public record SuccessMethodResult<T>(T Result) : MethodResult<T>(MethodResultKin
 
 public record ErrorMethodResult<T>(
   string ErrorCode,
-  string? ErrorMessage,
-  T? ErrorDetails) : MethodResult<T>(MethodResultKind.Error);
+  string? ErrorMessage = null,
+  T? ErrorDetails = default) : MethodResult<T>(MethodResultKind.Error);
 
 public abstract record MethodResult<T>(MethodResultKind Kind)
 {

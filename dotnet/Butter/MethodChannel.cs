@@ -4,7 +4,7 @@ namespace Butter;
 
 // TODO: Allow resizing the channel.
 // TODO: Allow disabling channel overflow warnings.
-class MethodChannel<T>
+public class MethodChannel<T>
 {
   private readonly string _name;
   private readonly BinaryMessenger _messenger;

@@ -11,11 +11,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'BasicMessageChannel Demo',
+      title: 'Method Channel Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'BasicMessageChannel Demo'),
+      home: const MyHomePage(title: 'Method Channel Demo'),
     );
   }
 }
@@ -30,10 +30,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  static const BasicMessageChannel<String?> platform = BasicMessageChannel<String?>(
-    'butter.string_message_channel',
-    StringCodec(),
-  );
+  static const MethodChannel channel = MethodChannel('butter.method_channel');
 
   String _response = 'No response yet.';
   final TextEditingController _messageController = TextEditingController();
@@ -47,7 +44,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     try {
-      final String? reply = await platform.send(message);
+      final String? reply = await channel.invokeMethod(
+        'sendMessage',
+        <String, dynamic> { 'message': message },
+      );
       if (!mounted) {
         return;
       }
@@ -63,15 +63,23 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
 
     // Respond to messages send from native.
-    platform.setMessageHandler((String? message) async {
-      _scaffoldMessengerKey.currentState?.showSnackBar(
-        SnackBar(
-          content: Text('Message from Native: $message'),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-
-      return 'Message received: $message';
+    channel.setMethodCallHandler((MethodCall call) async {
+      switch (call.method) {
+        case 'showSnackBar':
+          final String message = call.arguments as String;
+          if (!mounted) {
+            return false;
+          }
+          _scaffoldMessengerKey.currentState?.showSnackBar(
+            SnackBar(
+              content: Text('Message from Native: $message'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          return true;
+        default:
+          throw MissingPluginException('Method not implemented: ${call.method}');
+      }
     });
   }
 

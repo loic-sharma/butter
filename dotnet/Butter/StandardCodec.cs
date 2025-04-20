@@ -429,6 +429,7 @@ public enum StandardCodecType
   None,
 }
 
+// TODO: Add to string for debugging.
 public struct EncodableValue
 {
   private object _value;
