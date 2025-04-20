@@ -97,9 +97,9 @@ public class FlutterStandardMethodCodecTest
     var reader = new FlutterStandardMethodCodec();
 
     var method = reader.DecodeMessage(buffer);
-    var arguments = method.Arguments.ToList();
+    var arguments = method.Arguments.GetMap().ToList();
 
-    Assert.Equal("hello", method.Method);
+    Assert.Equal("hello", method.Name);
     Assert.Equal(2, arguments.Count);
     Assert.Equal("a", arguments[0].Key.GetString());
     Assert.True(arguments[0].Value.GetBool());

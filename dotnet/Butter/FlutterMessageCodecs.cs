@@ -61,7 +61,7 @@ public class FlutterStandardMethodCodec : FlutterMessageCodec<FlutterMethodCall>
     }
 
     var method = reader.GetString();
-    var arguments = reader.ReadValue().GetMap();
+    var arguments = reader.ReadValue();
 
     return new FlutterMethodCall(method, arguments);
   }
@@ -310,9 +310,7 @@ public ref struct StandardCodecReader
   }
 }
 
-public record FlutterMethodCall(
-  string Method,
-  IReadOnlyDictionary<EncodableValue, EncodableValue> Arguments);
+public record FlutterMethodCall(string Name, EncodableValue Arguments);
 
 public static class ReadEncodableValueExtensions
 {
