@@ -234,11 +234,6 @@ public class StandardCodecWriter
 
   private readonly ArrayBufferWriter<byte> _buffer = new();
 
-  public void Reset()
-  {
-    _buffer.Clear();
-  }
-
   public ReadOnlySpan<byte> Buffer => _buffer.WrittenSpan;
 
   public void WriteNull()
