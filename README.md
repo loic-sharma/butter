@@ -37,14 +37,13 @@ Initial:
 1. Check .NET public APIs. Make stuff internal. Add comments.
 
 After:
+1. SynchronizationContext for default win32 app
 1. Doctor command
 1. Upgrade command
 1. Add-to-app
     1. Win32
     1. WPF
     1. WinForms
-1. More messaging codecs like JSON
-1. Pigeon
 1. Tests
     1. Integration tests
     1. Test that templates copied from Flutter are up-to-date. Ensure not missing new templates.
@@ -55,6 +54,9 @@ After:
     1. How to bind to native code
     1. How to deploy Butter app
     1. .NET API reference
+1. Launch Flutter app from VS Code with debugging
+1. More messaging codecs like JSON
+1. Pigeon
 1. NativeAOT
 1. Games: Godot and Unity
 
