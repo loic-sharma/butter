@@ -1,33 +1,31 @@
 using System.Buffers;
-using System.Security;
 
 namespace Butter;
 
-interface IMethodCodec
+interface IMethodCodec<T>
 {
-  MethodCall DecodeMethodCall(ReadOnlySpan<byte> message);
-  MethodResult DecodeMethodResult(ReadOnlySpan<byte> message);
+  MethodCall<T> DecodeMethodCall(ReadOnlySpan<byte> message);
+  MethodResult<T> DecodeMethodResult(ReadOnlySpan<byte> message);
 
-  ReadOnlySpan<byte> EncodeMethodCall(MethodCall message);
-  ReadOnlySpan<byte> EncodeMethodResult(MethodResult result);
+  void EncodeMethodCall(IBufferWriter<byte> writer, MethodCall<T> message);
+  void EncodeMethodResult(IBufferWriter<byte> writer, MethodResult<T> result);
 }
 
-public class StandardMethodCodec : IMethodCodec
+public class StandardMethodCodec : IMethodCodec<EncodableValue>
 {
   public static readonly StandardMethodCodec Instance = new StandardMethodCodec();
 
-  public ReadOnlySpan<byte> EncodeMethodCall(MethodCall message)
+  public void EncodeMethodCall(
+    IBufferWriter<byte> writer,
+    MethodCall<EncodableValue> message)
   {
-    var buffer = new ArrayBufferWriter<byte>();
-    var writer = new StandardCodecWriter(buffer);
+    var codec = new StandardCodecWriter(writer);
 
-    writer.WriteString(message.Name);
-    writer.WriteValue(message.Arguments);
-
-    return buffer.WrittenSpan;
+    codec.WriteString(message.Name);
+    codec.WriteValue(message.Arguments);
   }
 
-  public MethodCall DecodeMethodCall(ReadOnlySpan<byte> message)
+  public MethodCall<EncodableValue> DecodeMethodCall(ReadOnlySpan<byte> message)
   {
     var reader = new StandardCodecReader(message);
 
@@ -39,21 +37,23 @@ public class StandardMethodCodec : IMethodCodec
     var method = reader.GetString();
     var arguments = reader.ReadValue();
 
-    return new MethodCall(method, arguments);
+    return new MethodCall<EncodableValue>(method, arguments);
   }
 
-  public ReadOnlySpan<byte> EncodeMethodResult(MethodResult result)
+  public void EncodeMethodResult(
+    IBufferWriter<byte> writer,
+    MethodResult<EncodableValue> result)
   {
     throw new NotImplementedException();
   }
 
-  public MethodResult DecodeMethodResult(ReadOnlySpan<byte> message)
+  public MethodResult<EncodableValue> DecodeMethodResult(ReadOnlySpan<byte> message)
   {
     throw new NotImplementedException();
   }
 }
 
-public record MethodCall(string Name, EncodableValue Arguments);
+public record MethodCall<T>(string Name, T Arguments);
 
 public enum MethodResultKind
 {
@@ -61,51 +61,29 @@ public enum MethodResultKind
   Error,
 }
 
-public class SuccessMethodResult : MethodResult
+public record SuccessMethodResult<T>(T Result) : MethodResult<T>(MethodResultKind.Success);
+
+public record ErrorMethodResult<T>(
+  string ErrorCode,
+  string? ErrorMessage,
+  T? ErrorDetails) : MethodResult<T>(MethodResultKind.Error);
+
+public abstract record MethodResult<T>(MethodResultKind Kind)
 {
-  public SuccessMethodResult(EncodableValue result)
-  {
-    Result = result;
-  }
-
-  public EncodableValue Result { get; }
-}
-
-public class ErrorMethodResult : MethodResult
-{
-  public ErrorMethodResult(string errorCode, string? errorMessage, EncodableValue? errorDetails)
-  {
-    ErrorCode = errorCode;
-    ErrorMessage = errorMessage;
-    ErrorDetails = errorDetails;
-  }
-
-  public string ErrorCode { get; }
-  public string? ErrorMessage { get; }
-  public EncodableValue? ErrorDetails { get; }
-}
-
-public abstract class MethodResult
-{
-  public MethodResultKind Kind { get; private set; }
-
-  public SuccessMethodResult AsSuccess()
+  public SuccessMethodResult<T> AsSuccess()
   {
     VerifyKind(MethodResultKind.Success);
-    return (SuccessMethodResult)this;
+    return (SuccessMethodResult<T>)this;
   }
 
-  public ErrorMethodResult AsError()
+  public ErrorMethodResult<T> AsError()
   {
     VerifyKind(MethodResultKind.Error);
-    return (ErrorMethodResult)this;
+    return (ErrorMethodResult<T>)this;
   }
 
   private void VerifyKind(MethodResultKind kind)
   {
-    if (kind != Kind)
-    {
-      throw new InvalidOperationException($"Method result is a {Kind}, not a {kind}.");
-    }
+    if (kind != Kind) throw new InvalidOperationException($"Method result is a {Kind}, not a {kind}.");
   }
 }
