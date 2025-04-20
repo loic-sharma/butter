@@ -405,7 +405,7 @@ public static class ReadEncodableValueExtensions
   }
 }
 
-public class EncodableValue
+public struct EncodableValue
 {
   private object _value;
 
