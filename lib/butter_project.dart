@@ -36,6 +36,9 @@ class ButterProject extends FlutterProjectPlatform {
   /// initial project creation.
   Directory get runnerDirectory => _editableDirectory.childDirectory('Runner');
 
+  /// The file for Butter's project.
+  File get butterProjectFile => managedDirectory.childFile('Butter.csproj');
+
   /// The file containing the generated configuration for the current build.
   File get generatedConfigPropsFile => ephemeralDirectory.childFile('GeneratedConfig.props');
 

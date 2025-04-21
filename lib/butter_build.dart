@@ -153,6 +153,7 @@ void _writeGeneratedConfig(
   <PropertyGroup>
     <FlutterRoot>$flutterRoot</FlutterRoot>
     <ButterToolBackend>$butterToolBackend</ButterToolBackend>
+    <ButterProjectPath>${project.butterProjectFile.path}</ButterProjectPath>
     <ButterEnvironmentVariables>''');
 
   bool first = true;
