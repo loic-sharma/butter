@@ -18,6 +18,7 @@ Initial:
 1. Plugins
     1. Plugin template
     1. Plugin registration
+    1. Inject plugin .csproj into the app's .sln
     1. Dart plugins
     1. C++ plugins
 1. Update README
