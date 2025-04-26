@@ -12,6 +12,10 @@
   <Import Project="..\Butter\ephemeral\GeneratedPluginRegistrant.proj" />
 
   <ItemGroup>
+    <Compile Include="..\Butter\ephemeral\GeneratedPluginRegistrant.cs" Link="GeneratedPluginRegistrant.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Butter\Butter.csproj" />
   </ItemGroup>
 

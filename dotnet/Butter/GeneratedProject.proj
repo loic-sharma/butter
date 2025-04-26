@@ -12,6 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ephemeral\GeneratedPluginRegistrant.cs" />
+
     <None Include="ephemeral\artifacts\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>

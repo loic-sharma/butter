@@ -229,16 +229,18 @@ Future<void> _writeGeneratedPluginRegistrant(
 //
 // Generated file. Do not edit.
 //
+
 namespace Butter;
 
 public class GeneratedPluginRegistrant
 {
-  public static void RegisterPlugins(Engine engine)
-  {
+    public static void RegisterPlugins(Engine engine)
+    {
 {{#methodChannelPlugins}}
-    // {{name}}
+        {{class}}.{{class}}.RegisterWithRegistrar(
+            engine.GetRegistrarForPlugin("{{name}}"));
 {{/methodChannelPlugins}}
-  }
+    }
 }
 ''';
 

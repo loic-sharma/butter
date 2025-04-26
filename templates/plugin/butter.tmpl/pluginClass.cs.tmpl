@@ -4,7 +4,7 @@ namespace {{pluginClass}};
 
 public class {{pluginClass}} : IPlugin
 {
-    public static void RegisterWithRegistar(PluginRegistrar registrar)
+    public static void RegisterWithRegistrar(PluginRegistrar registrar)
     {
         var plugin = new {{pluginClass}}();
         var channel = new MethodChannel<EncodableValue>(
