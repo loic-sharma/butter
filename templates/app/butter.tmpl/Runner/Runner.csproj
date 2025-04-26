@@ -9,6 +9,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <Import Project="..\Butter\ephemeral\GeneratedPluginRegistrant.proj" />
+
   <ItemGroup>
     <ProjectReference Include="..\Butter\Butter.csproj" />
   </ItemGroup>

@@ -7,8 +7,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
-  <Import Project="GeneratedPluginRegistrant.proj" />
-
   <PropertyGroup>
     <BuildDependsOn>ButterAssemble;$(BuildDependsOn)</BuildDependsOn>
   </PropertyGroup>
