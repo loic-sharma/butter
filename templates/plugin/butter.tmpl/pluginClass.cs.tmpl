@@ -2,7 +2,27 @@ using Butter;
 
 namespace {{pluginClass}};
 
-public class {{pluginClass}}
+public class {{pluginClass}} : IPlugin
 {
+    public static void RegisterWithRegistar(PluginRegistrar registrar)
+    {
+        var plugin = new {{pluginClass}}();
+        var channel = new MethodChannel<EncodableValue>(
+            "{{projectName}}",
+            registrar.Messenger,
+            StandardMethodCodec.Instance);
 
+        channel.SetMethodCallHandler(plugin.HandleMethodCall);
+
+        registrar.AddPlugin(new {{pluginClass}}());
+    }
+
+    private Task<MethodResult<EncodableValue>> HandleMethodCall(MethodCall<EncodableValue> call)
+    {
+        return Task.FromResult<MethodResult<EncodableValue>>(call.MethodName switch
+        {
+            "getPlatformVersion" => new SuccessMethodResult<EncodableValue>(Environment.OSVersion.VersionString),
+            _ => new NotImplementedMethodResult<EncodableValue>(),
+        });
+    }
 }

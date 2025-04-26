@@ -83,6 +83,7 @@ const List<String> _kButterSources = <String>[
   'MessageCodecs.cs',
   'MethodChannel.cs',
   'MethodCodecs.cs',
+  'PluginRegistrar.cs',
   'StandardCodec.cs',
   'View.cs',
   'ViewController.cs',

@@ -30,13 +30,13 @@ public class Engine : IDisposable
   {
     var properties = new FlutterDesktopEngineProperties
     {
-        AssetsPath = options.AssetsPath,
-        IcuDataPath = options.IcuDataPath,
-        AotLibraryPath = options.AotLibraryPath,
-        DartEntrypoint = options.DartEntrypoint,
-        // TODO
-        DartEntrypointArgc = 0,
-        DartEntrypointArgv = IntPtr.Zero,
+      AssetsPath = options.AssetsPath,
+      IcuDataPath = options.IcuDataPath,
+      AotLibraryPath = options.AotLibraryPath,
+      DartEntrypoint = options.DartEntrypoint,
+      // TODO
+      DartEntrypointArgc = 0,
+      DartEntrypointArgv = IntPtr.Zero,
     };
 
     var handle = Flutter.FlutterDesktopEngineCreate(properties);
@@ -52,11 +52,16 @@ public class Engine : IDisposable
   }
 
   internal EngineHandle Handle => _handle;
-  public BinaryMessenger Messenger =>_messenger;
+  public BinaryMessenger Messenger => _messenger;
 
   public bool Run() => Flutter.FlutterDesktopEngineRun(_handle, entryPoint: null);
 
   public void ReloadSystemFonts() => Flutter.FlutterDesktopEngineReloadSystemFonts(_handle);
+
+  public PluginRegistrar GetRegistrarForPlugin(string pluginName)
+  {
+    return new PluginRegistrar();
+  }
 
   public void OnNextFrame(Action callback)
   {

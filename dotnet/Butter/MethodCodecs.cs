@@ -21,7 +21,7 @@ public class StandardMethodCodec : IMethodCodec<EncodableValue>
   {
     var codec = new StandardCodecWriter(writer);
 
-    codec.WriteString(message.Name);
+    codec.WriteString(message.MethodName);
     codec.WriteValue(message.Arguments);
   }
 
@@ -116,7 +116,7 @@ public class StandardMethodCodec : IMethodCodec<EncodableValue>
   }
 }
 
-public record MethodCall<T>(string Name, T Arguments);
+public record MethodCall<T>(string MethodName, T Arguments);
 
 public enum MethodResultKind
 {
@@ -130,6 +130,8 @@ public record ErrorMethodResult<T>(
   string ErrorCode,
   string? ErrorMessage = null,
   T? ErrorDetails = default) : MethodResult<T>(MethodResultKind.Error);
+
+public record NotImplementedMethodResult<T>() : ErrorMethodResult<T>("NotImplemented", "Not implemented");
 
 public abstract record MethodResult<T>(MethodResultKind Kind)
 {

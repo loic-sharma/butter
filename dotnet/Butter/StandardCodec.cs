@@ -450,6 +450,18 @@ public struct EncodableValue
   public EncodableValue(List<EncodableValue> value) : this(StandardCodecType.List, value) { }
   public EncodableValue(Dictionary<EncodableValue, EncodableValue> value) : this(StandardCodecType.Map, value) { }
 
+  public static implicit operator EncodableValue(int value) => new EncodableValue(value);
+  public static implicit operator EncodableValue(long value) => new EncodableValue(value);
+  public static implicit operator EncodableValue(double value) => new EncodableValue(value);
+  public static implicit operator EncodableValue(string value) => new EncodableValue(value);
+  public static implicit operator EncodableValue(byte[] value) => new EncodableValue(value);
+  public static implicit operator EncodableValue(int[] value) => new EncodableValue(value);
+  public static implicit operator EncodableValue(long[] value) => new EncodableValue(value);
+  public static implicit operator EncodableValue(float[] value) => new EncodableValue(value);
+  public static implicit operator EncodableValue(double[] value) => new EncodableValue(value);
+  public static implicit operator EncodableValue(List<EncodableValue> value) => new EncodableValue(value);
+  public static implicit operator EncodableValue(Dictionary<EncodableValue, EncodableValue> value) => new EncodableValue(value);
+
   private EncodableValue(StandardCodecType type, object value)
   {
     _value = value;
