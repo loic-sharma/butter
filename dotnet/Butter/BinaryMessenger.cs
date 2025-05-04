@@ -8,15 +8,18 @@ public delegate Task BinaryMessageHandler(
   ReadOnlyMemory<byte> message,
   IBufferWriter<byte> responseWriter);
 
-public class BinaryMessenger {
+public class BinaryMessenger : IDisposable
+{
   private readonly MessengerHandle _handle;
   private readonly Dictionary<string, BinaryMessageHandler> _handlers = new Dictionary<string, BinaryMessageHandler>();
 
-  internal BinaryMessenger(MessengerHandle handle) {
+  internal BinaryMessenger(MessengerHandle handle)
+  {
     _handle = handle;
   }
 
-  public void Send(string channel, ReadOnlyMemory<byte> message) {
+  public void Send(string channel, ReadOnlyMemory<byte> message)
+  {
     Flutter.FlutterDesktopMessengerSend(_handle, channel, message);
   }
 
@@ -37,8 +40,10 @@ public class BinaryMessenger {
     return await completer.Task;
   }
 
-  public void SetHandler(string channel, BinaryMessageHandler handler) {
-    if (_handlers.ContainsKey(channel)) {
+  public void SetHandler(string channel, BinaryMessageHandler handler)
+  {
+    if (_handlers.ContainsKey(channel))
+    {
       Flutter.FlutterDesktopMessengerSetCallback(_handle, channel, null);
     }
 
@@ -47,7 +52,8 @@ public class BinaryMessenger {
     Flutter.FlutterDesktopMessengerSetCallback(
       _handle,
       channel,
-      async (messenger, message, userData) => {
+      async (messenger, message, userData) =>
+      {
         // TODO: Make this thread-safe.
         // Flutter Windows locks the messenger, drops the response if the
         // messenger is not available, sends the response, then unlocks the messenger.
@@ -64,5 +70,10 @@ public class BinaryMessenger {
           message.ResponseHandle,
           responseWriter.WrittenMemory);
       });
+  }
+
+  public void Dispose()
+  {
+    _handle.Dispose();
   }
 }

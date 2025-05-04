@@ -57,7 +57,7 @@ internal class TextureRegistrarHandle : FlutterSafeHandle
 
 internal delegate void FlutterDesktopBinaryReply(byte[] data, IntPtr dataSize, IntPtr userData);
 
-internal delegate void FlutterDesktopOnPluginRegistrarDestroyed(PluginRegistrarHandle registrar);
+internal delegate void FlutterDesktopOnPluginRegistrarDestroyed(IntPtr registrar);
 
 internal delegate void FlutterDesktopMessageCallback(IntPtr messenger, FlutterDesktopMessage message, IntPtr userData);
 
@@ -226,7 +226,7 @@ internal static class Flutter
 
   [DllImport("flutter_windows")]
   public static extern void FlutterDesktopPluginRegistrarSetDestructionHandler(
-    IntPtr registrar,
+    PluginRegistrarHandle registrar,
     FlutterDesktopOnPluginRegistrarDestroyed callback);
 
   [DllImport("flutter_windows")]

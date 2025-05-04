@@ -60,7 +60,16 @@ public class Engine : IDisposable
 
   public PluginRegistrar GetRegistrarForPlugin(string pluginName)
   {
-    return new PluginRegistrar();
+    var handle = Flutter.FlutterDesktopEngineGetPluginRegistrar(_handle, pluginName);
+    var messengerHandle = Flutter.FlutterDesktopEngineGetMessenger(_handle);
+    var messenger = new BinaryMessenger(messengerHandle);
+    var registrar = new PluginRegistrar(handle, messenger);
+
+    Flutter.FlutterDesktopPluginRegistrarSetDestructionHandler(
+      handle,
+      (IntPtr registrarHandle) => registrar.Dispose());
+
+    return registrar;
   }
 
   public void OnNextFrame(Action callback)

@@ -14,7 +14,7 @@ public class {{pluginClass}} : IPlugin
 
         channel.SetMethodCallHandler(plugin.HandleMethodCall);
 
-        registrar.AddPlugin(new {{pluginClass}}());
+        registrar.AddPlugin<{{pluginClass}}>(plugin);
     }
 
     private Task<MethodResult<EncodableValue>> HandleMethodCall(MethodCall<EncodableValue> call)
@@ -24,5 +24,10 @@ public class {{pluginClass}} : IPlugin
             "getPlatformVersion" => new SuccessMethodResult<EncodableValue>(Environment.OSVersion.VersionString),
             _ => new NotImplementedMethodResult<EncodableValue>(),
         });
+    }
+
+    public void Dispose()
+    {
+        // Dispose of any resources if needed
     }
 }
