@@ -2,14 +2,73 @@
 title: Intalling Butter
 ---
 
+## Software requirements
+
+1. Windows 10 or higher
+1. [Git](https://gitforwindows.org/) 2.27 or higher
+1. [.NET](https://dotnet.microsoft.com/download) 9 or higher
+
 ## How to install Butter
 
-TODO
+1. Clone the Butter repository:
+
+   ```bash
+   git clone https://github.com/loic-sharma/butter.git
+   ```
+
+1. Add `butter\bin` to your `PATH` environment variable:
+
+    1. Open the Windows Start menu and search for `environment variables`
+    1. Click on **Edit environment variables for your account**
+    1. In the **User variables** section, select the `Path` variable and click **Edit...**
+    1. Click **New** and add the path to the `butter\bin` directory (e.g., `C:\path\to\butter\bin`)
+
+1. Use the `doctor` command to check if everything is set up correctly:
+
+   ```bash
+   butter doctor
+   ```
+
+   Fix any issues that are reported.
 
 ### Create your first app
 
-TODO
+<Tabs>
+  <TabItem label="New app" value="new">
+    1. Create a new Flutter app using the Butter tool:
+
+       ```bash
+       butter create hello_world
+       ```
+
+       This creates a new Flutter app in the `hello_world` directory.
+
+    2. Navigate to the app directory:
+
+       ```bash
+       cd hello_world
+       ```
+
+  </TabItem>
+  
+  <TabItem label="Add to an existing Flutter app" value="existing">
+
+    1. Navigate to your existing Flutter app directory:
+
+       ```bash
+       cd path/to/your/flutter/app
+       ```
+
+    1. Run the following command to add Butter to your app:
+
+       ```bash
+        butter create .
+       ```
+  </TabItem>
+</Tabs>
 
 ### Run your first app
 
-TODO
+```bash
+butter run -d butter
+```
